@@ -222,6 +222,10 @@ button:disabled{opacity:.65}
 @keyframes tapPromptPulse{to{opacity:.55;transform:scale(.985)}}
 
 
+/* === Canvas Visibility Fix === */
+#game{position:fixed;inset:0;z-index:1;background:#081421!important}
+#ui{z-index:5}
+.screen{z-index:20}
 </style>
 <!-- The Shepherd clean master patch 1781489707 -->
 </head>
@@ -849,6 +853,10 @@ function update(dt){
  updateShadows(dt);
  updateLights(dt);
  updateParticles(dt);
+ if(state.revealPath&&state.revealPath.active){
+   state.revealPath.timer=Math.max(0,(state.revealPath.timer||0)-dt);
+   if(state.revealPath.timer<=0)clearRevealPath();
+ }
  updateCamera();updateHUD();
 }
 function sanitizeFollowers(){
@@ -904,6 +912,14 @@ function hideArmorPopup(){
  if(c)c.style.display="none";
  if(state){state.armorCelebrating=false;state.paused=false;}
 }
+
+function clearRevealPath(){
+ if(!state || !state.revealPath) return;
+ state.revealPath.active=false;
+ state.revealPath.timer=0;
+ state.revealPath.points=[];
+}
+
 function revealPathAbility(){
  if(!state||state.mode!=="play"||state.paused||state.delivering)return;
  if(state.faith<100){
