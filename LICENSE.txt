@@ -1,0 +1,25 @@
+LICENSE
+
+Copyright (c) 2026 Eternatones Studios. All rights reserved.
+
+The Shepherd: Armor of Light, including its game code, game design, story concepts, characters, names, logos, written materials, original artwork, original audio, and related assets, is proprietary intellectual property of Eternatones Studios unless otherwise stated.
+
+You may:
+- Play the game for personal entertainment.
+- Share links to the official hosted game page.
+- Stream, review, or make gameplay videos of the game with proper credit.
+
+You may not:
+- Copy, redistribute, sell, sublicense, or reupload the game files.
+- Claim ownership of the game or its assets.
+- Extract, reuse, or resell the code, artwork, music, sound effects, names, logos, or written content.
+- Create commercial derivative works without written permission from Eternatones Studios.
+- Remove copyright notices or attribution.
+
+Third-Party Content
+Any third-party libraries, fonts, tools, or platform services used by the game remain subject to their own licenses and terms.
+
+Permission Requests
+For licensing, publishing, ministry, educational, or commercial use requests, contact Eternatones Studios.
+
+This software is provided "as is" without warranty of any kind. Eternatones Studios is not liable for damages arising from use of the game.
