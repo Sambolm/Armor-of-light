@@ -1,0 +1,2189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>The Shepherd: Armor of Light</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="The Shepherd: Armor of Light">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#02040b">
+<style>
+:root{--gold:#f0c66e;--cream:#fff1bf;--dark:#02040b;--ui-scale:1}
+*{
+  box-sizing:border-box;
+  -webkit-user-select:none;
+  user-select:none;
+  -webkit-touch-callout:none;
+  -webkit-tap-highlight-color:transparent;
+}
+button, canvas, #ui, .screen{
+  -webkit-user-select:none;
+  user-select:none;
+  -webkit-touch-callout:none;
+  touch-action:none;
+}
+html,body{margin:0;height:100%;overflow:hidden;background:#02040b;color:var(--cream);font-family:Georgia,"Times New Roman",serif;touch-action:none}
+canvas{display:block;width:100vw;height:100vh}
+#rotateNotice{
+  position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;text-align:center;
+  background:radial-gradient(circle at 50% 30%,rgba(255,224,121,.18),transparent 42%),#02040b;
+  color:#fff1bf;padding:28px;font-family:Georgia,"Times New Roman",serif;
+}
+#rotateNotice .box{max-width:440px;border:1px solid rgba(240,198,110,.35);border-radius:24px;padding:28px;background:rgba(0,0,0,.42);box-shadow:0 0 50px rgba(240,198,110,.16)}
+#rotateNotice h1{color:#f0c66e;margin:0 0 10px;font-size:30px}
+#rotateNotice .phone{font-size:54px;margin-bottom:8px}
+@media (orientation: portrait) and (max-width: 900px){
+  #rotateNotice{display:flex}
+  #ui,#menu,#tutorial,#overlay,#faithShop,#sanctuary,#heaven,#armorPopup,#armorBackdrop{display:none!important}
+}
+@media (orientation: landscape) and (max-height: 520px){
+  #topbar{top:4px;padding:5px 8px}
+  #leftPanel{top:8px;left:8px;transform:scale(.86);transform-origin:top left}
+  #rightPanel{top:8px;right:8px;transform:scale(.86);transform-origin:top right}
+  #legend{display:none}
+  #joystick{left:18px;bottom:18px;transform:scale(.82);transform-origin:bottom left}
+  #bottomHealth{bottom:10px;height:18px;width:min(420px,50vw)}
+  #miracle{right:18px;bottom:78px;transform:scale(.84);transform-origin:bottom right}#pathAbility{right:86px;bottom:16px;transform:scale(.84);transform-origin:bottom right}.abilityHint{display:none}
+}
+button{font-family:Georgia,"Times New Roman",serif;border:1px solid #b98a32;border-radius:999px;padding:12px 18px;background:#f0c66e;color:#211204;font-weight:900;cursor:pointer}
+button:disabled{opacity:.65}
+.screen{position:fixed;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:22px;background:radial-gradient(circle at 50% 28%,rgba(255,224,121,.18),transparent 42%),linear-gradient(180deg,rgba(8,12,28,.96),rgba(1,3,10,.96));z-index:20}
+.card{width:min(92vw,620px);max-height:calc(100vh - 36px);overflow:auto;background:linear-gradient(180deg,rgba(20,20,30,.94),rgba(5,7,15,.96));border:1px solid rgba(223,190,103,.34);border-radius:26px;padding:24px;box-shadow:0 0 80px rgba(240,198,110,.18)}
+#menu{display:flex}
+#menu .card{position:relative;overflow:hidden}
+#menu .card:before{content:"";position:absolute;inset:-50%;background:conic-gradient(transparent,rgba(255,224,120,.12),transparent,rgba(160,190,255,.08),transparent);animation:spin 16s linear infinite}
+#menu .card>*{position:relative}
+@keyframes spin{to{transform:rotate(360deg)}}
+#logoMark{width:120px;height:120px;margin:0 auto 10px;border-radius:50%;position:relative;background:radial-gradient(circle,#fff7c9 0%,#f0c66e 24%,rgba(240,198,110,.1) 55%,transparent 70%);box-shadow:0 0 55px rgba(240,198,110,.42)}
+#logoMark:before{content:"";position:absolute;left:50%;top:15px;width:10px;height:78px;transform:translateX(-50%);background:linear-gradient(#fff8d0,#d99a2b);border-radius:999px;box-shadow:0 0 18px #ffe38e}
+#logoMark:after{content:"";position:absolute;left:50%;top:38px;width:60px;height:9px;transform:translateX(-50%);background:linear-gradient(90deg,transparent,#fff5b7,#d99a2b,#fff5b7,transparent);border-radius:999px}
+#menuTitle{font-size:50px;letter-spacing:2px;color:#f0c66e;text-shadow:0 0 12px rgba(255,242,170,.55),0 0 36px rgba(240,198,110,.38),0 4px 14px #000;margin:0;text-transform:uppercase}
+#menuTitle span{display:block;font-size:18px;letter-spacing:7px;color:#fff1bf;margin-bottom:-4px}
+.menuButtons{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:18px 0}
+.menuNote{font-size:14px;line-height:1.45;color:#ded2aa;max-width:540px;margin:12px auto 0;background:rgba(0,0,0,.22);border:1px solid rgba(240,198,110,.14);border-radius:14px;padding:12px}
+#ui{position:fixed;inset:0;pointer-events:none;display:none;z-index:5}
+#objectivePanel{
+  position:absolute;left:50%;top:calc(52px * var(--ui-scale));transform:translateX(-50%) scale(var(--ui-scale));
+  transform-origin:top center;min-width:220px;max-width:360px;
+  padding:8px 12px;border:1px solid rgba(240,198,110,.32);border-radius:14px;
+  background:rgba(4,8,18,.58);box-shadow:0 0 18px rgba(0,0,0,.24);
+  color:#fff1bf;text-align:left;font-family:Georgia,"Times New Roman",serif;
+}
+#objectivePanel .objTitle{font-size:11px;letter-spacing:1.8px;color:#f0c66e;text-align:center;font-weight:900;margin-bottom:4px}
+#objectivePanel .objLine{font-size:12px;line-height:1.35;white-space:nowrap}
+#objectivePanel .done{color:#9fe6b2}
+#objectivePanel .current{color:#fff1bf;text-shadow:0 0 8px rgba(255,230,140,.45)}
+#objectivePanel .locked{color:#a9a39a}
+#armorCelebration{
+  position:fixed;inset:0;z-index:55;display:none;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 50% 42%,rgba(255,213,92,.18),rgba(0,0,0,.72) 62%);
+  pointer-events:auto;color:#fff1bf;text-align:center;font-family:Georgia,"Times New Roman",serif;
+}
+#armorCelebration .armorCard{
+  width:min(520px,86vw);border:2px solid rgba(240,198,110,.78);border-radius:24px;
+  background:linear-gradient(180deg,rgba(12,18,38,.94),rgba(4,8,18,.96));
+  box-shadow:0 0 44px rgba(240,198,110,.28), inset 0 0 28px rgba(255,231,145,.08);
+  padding:24px 24px 22px;transform:scale(.94);animation:armorCardIn .28s ease-out forwards;
+}
+#armorCelebration .armorKicker{font-size:13px;letter-spacing:3px;color:#f0c66e;font-weight:900;margin-bottom:8px}
+#armorCelebration .armorIcon{font-size:54px;line-height:1;margin:2px 0 8px;filter:drop-shadow(0 0 12px rgba(255,224,120,.75));animation:armorFloat 1.1s ease-in-out infinite alternate}
+#armorCelebration .armorName{font-size:28px;color:#fff1bf;font-weight:900;margin:6px 0;text-shadow:0 0 12px rgba(255,224,130,.36)}
+#armorCelebration .armorQuote{font-size:17px;color:#dcd3b0;font-style:italic;margin:12px auto;max-width:420px;line-height:1.35}
+#armorCelebration .armorBonus{font-size:15px;color:#ffcf73;font-weight:900;margin-top:10px}
+#armorCelebration .armorCollected{font-size:13px;color:#bfc9df;margin-top:12px}
+#armorContinueBtn{
+  margin-top:16px;padding:10px 18px;border-radius:999px;border:1px solid #f0c66e;
+  background:#f0c66e;color:#211204;font-weight:900;font-family:Georgia,"Times New Roman",serif;
+  pointer-events:auto;box-shadow:0 0 18px rgba(240,198,110,.35)
+}
+@keyframes armorCardIn{to{transform:scale(1)}}
+@keyframes armorFloat{to{transform:translateY(-7px)}}
+#lanternText.ready{color:#ffcf73;text-shadow:0 0 8px rgba(255,207,115,.65)}
+#lanternText.blessed{color:#ffcf73;text-shadow:0 0 12px rgba(255,207,115,.95);animation:lanternPulse .75s infinite alternate}
+@keyframes lanternPulse{to{filter:brightness(1.35)}}
+#pauseBtn{position:absolute;left:calc(12px * var(--ui-scale));top:calc(8px * var(--ui-scale));width:calc(38px * var(--ui-scale));height:calc(34px * var(--ui-scale));border-radius:10px;border:1px solid rgba(240,198,110,.65);background:rgba(4,8,18,.72);color:#fff1bf;font-size:calc(20px * var(--ui-scale));display:flex;align-items:center;justify-content:center;pointer-events:auto;box-shadow:0 0 16px rgba(240,198,110,.16);z-index:7;padding:0}
+#pauseMenu.screen{background:rgba(0,0,0,.62);backdrop-filter:blur(3px);z-index:40}
+.pauseButtons{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.pauseButtons button{width:min(320px,80vw);margin:0 auto}
+#topbar{position:absolute;left:50%;top:calc(4px * var(--ui-scale));transform:translateX(-50%);width:min(760px,92vw);text-align:center;background:linear-gradient(90deg,transparent,rgba(7,8,12,.82),transparent);border-top:1px solid rgba(220,174,72,.42);border-bottom:1px solid rgba(220,174,72,.26);padding:8px 10px;text-shadow:0 2px 8px #000}
+#areaName{color:#e4b85c;letter-spacing:1px;font-size:15px}
+#objective{font-size:14px;margin-top:3px}
+#leftPanel{position:absolute;left:calc(12px * var(--ui-scale));top:calc(52px * var(--ui-scale));transform:scale(var(--ui-scale));transform-origin:top left;width:174px;text-shadow:0 2px 8px #000}
+#faithOrb{width:74px;height:74px;border-radius:50%;border:3px solid #b98a32;background:radial-gradient(circle,#ffe58a 0%,#8d5a13 36%,#070a14 68%);box-shadow:0 0 28px rgba(255,194,71,.45),inset 0 0 22px rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:25px;font-weight:900;margin-bottom:8px}
+.panelLine{background:rgba(0,0,0,.46);border-left:1px solid rgba(220,174,72,.36);padding:7px 8px;margin:6px 0;font-size:12px}
+#rightPanel{position:absolute;right:calc(12px * var(--ui-scale));top:calc(28px * var(--ui-scale));transform:scale(var(--ui-scale));transform-origin:top right;text-align:right;text-shadow:0 2px 8px #000;max-width:205px}
+#rightPanel h3{margin:0 0 8px;color:#e7c06b;letter-spacing:1px;font-size:15px}
+#counter{font-size:20px;color:#ffe39a}
+#bottomHealth{position:absolute;left:50%;bottom:calc(20px * var(--ui-scale));transform:translateX(-50%);width:calc(min(420px,50vw) * var(--ui-scale));height:calc(18px * var(--ui-scale));border:2px solid #7d5c23;background:#1a0708;box-shadow:0 0 18px rgba(0,0,0,.65)}
+#healthFill{height:100%;width:100%;background:linear-gradient(90deg,#8b0d13,#c22620,#e25e37)}
+#miracle{position:absolute;right:calc(18px * var(--ui-scale));bottom:calc(92px * var(--ui-scale));transform:scale(var(--ui-scale));transform-origin:bottom right;pointer-events:auto;width:72px;height:72px;border-radius:50%;border:3px solid #b98a32;background:radial-gradient(circle,#fff7b5 0%,#e2a92b 38%,#160d04 75%);box-shadow:0 0 28px rgba(255,203,69,.35);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;line-height:1.05;padding:0;color:#221200;font-weight:900}
+#miracle.ready{box-shadow:0 0 48px rgba(255,218,80,.95);animation:pulse 1s infinite alternate}
+#pathAbility{position:absolute;right:calc(92px * var(--ui-scale));bottom:calc(20px * var(--ui-scale));pointer-events:auto;width:62px;height:62px;border-radius:50%;border:3px solid #8fb6ff;background:radial-gradient(circle,#eaf4ff 0%,#84b8ff 38%,#081325 75%);box-shadow:0 0 24px rgba(150,200,255,.35);display:flex;align-items:center;justify-content:center;text-align:center;padding:0;color:#061226;font-weight:800;transform:scale(var(--ui-scale));transform-origin:bottom right}
+#pathAbility .symbol{font-size:26px;line-height:1}
+#pathAbility.ready{box-shadow:0 0 40px rgba(180,220,255,.95)}
+.abilityHint{position:absolute;right:calc(16px * var(--ui-scale));bottom:calc(160px * var(--ui-scale));font-size:10px;color:#fff1bf;text-shadow:0 2px 6px #000;opacity:.85;pointer-events:none;transform:scale(var(--ui-scale));transform-origin:bottom right}
+#miracle .symbol{font-size:28px}.label{font-size:10px;letter-spacing:.6px}
+@keyframes pulse{to{transform:scale(1.06)}}
+#joystick{position:absolute;opacity:0;transition:opacity .12s ease;left:calc(24px * var(--ui-scale));bottom:calc(32px * var(--ui-scale));transform:scale(var(--ui-scale));transform-origin:bottom left;width:112px;height:112px;border-radius:50%;background:rgba(255,230,150,.06);border:1px solid rgba(223,190,103,.18);box-shadow:inset 0 0 25px rgba(255,230,140,.08);pointer-events:auto;touch-action:none}
+#joyDot{position:absolute;left:39px;top:39px;width:34px;height:34px;border-radius:50%;background:rgba(255,227,137,.28);box-shadow:0 0 18px rgba(255,220,90,.25)}
+#legend{position:absolute;left:calc(12px * var(--ui-scale));bottom:calc(154px * var(--ui-scale));transform:scale(var(--ui-scale));transform-origin:bottom left;background:rgba(0,0,0,.36);border:1px solid rgba(223,190,103,.18);padding:8px 9px;border-radius:12px;font-size:12px;text-shadow:0 2px 6px #000}
+.legendRow{margin:3px 0;white-space:nowrap}
+#armorBackdrop{position:fixed;inset:0;display:none;z-index:29;background:rgba(0,0,0,.56);backdrop-filter:blur(2px)}
+#armorPopup{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.96);width:min(88vw,540px);display:none;z-index:30;text-align:center;background:linear-gradient(180deg,rgba(28,22,12,.97),rgba(5,7,15,.97));border:2px solid rgba(240,198,110,.62);border-radius:24px;padding:24px 22px;box-shadow:0 0 80px rgba(255,220,105,.35),inset 0 0 40px rgba(255,239,176,.06);color:#fff1bf;text-shadow:0 2px 8px #000;pointer-events:auto}
+#armorPopup.show{display:block;animation:armorPop .35s ease-out forwards}
+@keyframes armorPop{from{opacity:0;transform:translate(-50%,-48%) scale(.88)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+#armorPopup h1{margin:0 0 8px;color:#f0c66e;font-size:30px;text-transform:uppercase}
+#armorPopup .verse{font-size:15px;line-height:1.35;color:#fff6d6;margin:8px auto 14px;max-width:450px;font-style:italic}
+#armorPopup .bonus{font-size:17px;margin:7px 0;color:#d8ffbe}
+#armorContinue{margin-top:18px;font-size:17px;padding:13px 24px}
+#tutorial{overflow:auto;align-items:flex-start;padding-top:24px;padding-bottom:24px}
+#tutorial .card{text-align:left}
+#tutorial h1{text-align:center}
+.infoBox,.shopItem,.upgrade{border:1px solid rgba(223,190,103,.18);background:rgba(255,255,255,.045);border-radius:14px;padding:12px 13px;line-height:1.35;margin:10px 0;text-align:left}
+.infoBox b,.shopItem b{color:#f0c66e}
+.soulLine{display:flex;gap:10px;align-items:center;margin:6px 0}
+.soulIcon{width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(255,255,255,.07);font-size:18px;box-shadow:0 0 14px rgba(255,220,120,.18)}
+#faithShop{align-items:flex-start;overflow-y:auto;padding-top:18px;padding-bottom:18px;-webkit-overflow-scrolling:touch}
+#resultsBreakdown{margin:8px auto 10px;max-width:540px;text-align:left;border:1px solid rgba(240,198,110,.22);background:rgba(0,0,0,.24);border-radius:14px;padding:9px 12px;font-size:12px;line-height:1.32}
+#resultsBreakdown h3{margin:0 0 8px;color:#f0c66e;text-align:center}
+.resultRow{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid rgba(255,255,255,.06);padding:4px 0}
+.resultTotal{color:#ffe38e;font-weight:900}
+.shopGrid{display:grid;grid-template-columns:1fr;gap:8px;margin:10px 0}
+.shopItem button.purchased{background:#21351e;color:#bff0a8;border-color:#65b85d}
+#shopFaith{color:#ffe38e;font-weight:900}
+#heaven .card{background:radial-gradient(circle at 50% 20%,rgba(255,255,230,.32),rgba(255,255,255,.08) 35%,rgba(8,12,28,.88));border-color:rgba(255,244,190,.6)}
+#heaven h1{font-size:34px;color:#fff8cf;text-shadow:0 0 25px rgba(255,255,220,.45)}
+
+/* compact top HUD */
+#topbar{transform:translateX(-50%) scale(calc(var(--ui-scale) * .78))!important;transform-origin:top center!important;line-height:1.05!important}
+#topbar h2,#areaName{font-size:16px!important;margin:0!important;letter-spacing:1px!important}
+#topbar div{font-size:11px!important;margin-top:1px!important}
+#objectivePanel{top:calc(38px * var(--ui-scale))!important;transform:translateX(-50%) scale(calc(var(--ui-scale) * .82))!important;padding:5px 9px!important}
+#objectivePanel .objTitle{font-size:9px!important;margin-bottom:2px!important}
+#objectivePanel .objLine{font-size:10px!important;line-height:1.18!important}
+#rightPanel{transform:scale(calc(var(--ui-scale) * .86))!important}
+#leftPanel{transform:scale(calc(var(--ui-scale) * .86))!important}
+
+/* Holy Sigils - visual only */
+#armorCelebration .armorIcon{
+  font-size:0 !important;
+}
+#armorCelebration .armorIcon svg{
+  width:86px;
+  height:86px;
+  display:block;
+  margin:0 auto;
+  filter:drop-shadow(0 0 12px rgba(255,224,120,.75));
+}
+
+
+/* === Pause Audio Controls === */
+#audioControls{
+  margin:12px auto 4px;
+  padding:10px;
+  border:1px solid rgba(240,198,110,.35);
+  border-radius:16px;
+  background:rgba(255,241,191,.06);
+  max-width:360px;
+}
+#audioControls .audioTitle{
+  color:#f0c66e;
+  font-weight:900;
+  letter-spacing:1.2px;
+  font-size:12px;
+  margin-bottom:6px;
+}
+#audioControls label{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  color:#fff1bf;
+  font-size:14px;
+  margin:8px 0;
+}
+#audioControls input[type=range]{width:170px}
+
+
+/* === Safe Tap To Begin Prompt === */
+#tapToBeginPrompt{
+  margin:12px auto 8px;
+  color:#fff7d1;
+  font-size:clamp(20px,2.8vw,30px);
+  font-weight:900;
+  letter-spacing:.8px;
+  white-space:nowrap;
+  text-shadow:0 0 10px rgba(255,241,191,.95),0 0 25px rgba(240,198,110,.85),0 0 45px rgba(240,198,110,.6);
+  animation:tapPromptPulse 1.1s ease-in-out infinite alternate;
+  pointer-events:none;
+}
+@keyframes tapPromptPulse{to{opacity:.55;transform:scale(.985)}}
+
+
+/* === Canvas Visibility Fix === */
+#game{position:fixed;inset:0;z-index:1;background:#081421!important}
+#ui{z-index:5}
+.screen{z-index:20}
+</style>
+<!-- The Shepherd clean master patch 1781489707 -->
+</head>
+<body onselectstart="return false" ondragstart="return false">
+<canvas id="game"></canvas>
+<div id="rotateNotice">
+  <div class="box">
+    <div class="phone">↻</div>
+    <h1>Turn Your iPhone</h1>
+    <p>The Shepherd: Armor of Light is designed for landscape play.</p>
+    <p>Rotate your phone sideways to begin.</p>
+  </div>
+</div>
+<div id="armorBackdrop"></div>
+<div id="armorPopup">
+  <h1 id="armorPopupTitle">Armor Found</h1>
+  <div class="verse" id="armorPopupVerse"></div>
+  <div id="armorPopupBonuses"></div>
+  <button id="armorContinue">Continue Game</button>
+</div>
+
+<div id="menu" class="screen">
+  <div class="card">
+    <div id="logoMark"></div>
+    <h1 id="menuTitle"><span>The Shepherd:</span>Armor of Light</h1>
+    <div style="font-size:18px;color:#fff1bf;margin:10px 0 12px">Carry the Light. Shepherd the Lost. Bring them home.</div>
+    <div id="tapToBeginPrompt">✨ TAP ANYWHERE TO BEGIN ✨</div>
+    <div class="menuButtons">
+      <button id="startGame">Start New Game</button>
+      <button id="continueGame">Continue Game</button>
+    </div>
+    <p class="menuNote">The Shepherd: Armor of Light alpha with ten unique regions, Armor of God progression, Sanctuary delivery, Faith shop, sound effects, and the Heaven ending foundation.</p>
+  </div>
+</div>
+
+<div id="tutorial" class="screen">
+  <div class="card">
+    <h1>Before You Begin</h1>
+    <p style="text-align:center;color:#fff1bf">You are a shepherd of light. Find lost souls, protect them, and bring them safely home.</p>
+    <div class="infoBox">
+      <b>Soul Types</b>
+      <div class="soulLine"><span class="soulIcon">✧</span><span><b>Fading Souls</b> are newly rescued blue stars.</span></div>
+      <div class="soulLine"><span class="soulIcon">✦</span><span><b>Comforted Souls</b> generate more Faith after staying with you.</span></div>
+      <div class="soulLine"><span class="soulIcon">☀</span><span><b>Blessed Souls</b> give the strongest Faith and delivery bonuses.</span></div>
+      <div class="soulLine"><span class="soulIcon">◆</span><span><b>Wounded Souls</b> must be healed by standing near them.</span></div>
+      <div class="soulLine"><span class="soulIcon">♡</span><span><b>Lonely Souls</b> are rare and worth protecting.</span></div>
+    </div>
+    <div class="infoBox"><b>Objectives</b><p>The objective tracker shows your next step: find the armor chest, rescue souls, and return to Sanctuary.</p></div><div class="infoBox"><b>Sanctuary</b><p>The Sanctuary is your safe zone and delivery point. Its location may change each run. After opening the armor chest, Reveal Path guides you home.</p></div><div class="infoBox"><b>Group Prayer</b><p>Stand still with followers to pray. Faith builds faster, but darkness is drawn toward the light.</p></div><div class="infoBox"><b>Lantern Prayer Boost</b><p>Ancient lanterns strengthen prayer. Stand near a lantern with followers and begin Group Prayer to boost Faith generation to x3. Lanterns are placed differently in each region, so explore to find them. Every visible lantern is functional.</p></div>
+    <div class="infoBox"><b>Bells</b><p>Stand still near a bell to restore it. Restoring a bell grants Faith and calls new souls into the region.</p></div><div class="infoBox"><b>Armor Chests</b><p>Each region hides one chest. Stand on it for 3 seconds to receive a permanent Armor of God piece. Armor chests may appear in different places each run. Use Reveal Path if you need guidance.</p>
+<div style="margin-top:12px;padding:10px;border:1px solid rgba(240,198,110,.35);border-radius:10px;color:#fff7d1">
+<b>Dynamic Joystick:</b> Touch and hold anywhere on the left side of the screen to create the movement joystick. It appears where your thumb touches and follows naturally.
+</div>
+
+    </div>
+    <button id="beginAfterTutorial" style="display:block;margin:18px auto 0">Begin the Journey</button>
+  </div>
+</div>
+
+<div id="armorCelebration">
+  <div class="armorCard">
+    <div class="armorKicker">ARMOR OF GOD</div>
+    <div class="armorIcon" id="armorCelebrationIcon">🛡️</div>
+    <div class="armorName" id="armorCelebrationName">Shield of Faith</div>
+    <div class="armorQuote" id="armorCelebrationQuote">"Stand firm against the storm."</div>
+    <div class="armorBonus" id="armorCelebrationBonus">Permanent blessing unlocked.</div>
+    <div class="armorCollected" id="armorCelebrationCollected">Collected 1 / 6</div>
+    <button id="armorContinueBtn">Continue</button>
+  </div>
+</div>
+<div id="ui">
+  <button id="pauseBtn" title="Pause">☰</button>
+  <div id="objectivePanel">
+    <div class="objTitle">CURRENT OBJECTIVE</div>
+    <div class="objLine" id="objChest">☐ Find Armor Chest</div>
+    <div class="objLine" id="objSouls">☐ Rescue Souls</div>
+    <div class="objLine" id="objSanctuary">☐ Return to Sanctuary</div>
+  </div>
+  <div id="topbar"><b id="areaName">FORGOTTEN VILLAGE</b><div id="objective">Find souls. Follow the Light. Bring them home.</div></div>
+  <div id="leftPanel">
+    <div id="faithOrb">0</div>
+    <div class="panelLine" id="faithText">Radiance Faith 0 / 100</div>
+    <div class="panelLine" id="hopeText">Hope 0</div>
+    <div class="panelLine" id="flockText">Flock 0</div>
+    <div class="panelLine" id="prayerText">Prayer: Stand still</div>
+    <div class="panelLine" id="lanternText">Lantern: Pray nearby</div>
+    <div class="panelLine" id="armorText">Armor: None</div>
+  </div>
+  <div id="rightPanel"><h3 id="regionTitle">REGION 1</h3><div>HOME</div><div id="counter">0 / 20</div><div class="small" id="bellText">Bell: Unrestored</div></div>
+  <div id="legend">
+    <div class="legendRow">✧ Fading</div><div class="legendRow">✦ Comforted</div><div class="legendRow">☀ Blessed</div><div class="legendRow">◆ Wounded</div>
+  </div>
+  <div id="joystick"><div id="joyDot"></div></div>
+  <div id="bottomHealth"><div id="healthFill"></div></div>
+  <button id="pathAbility" title="Reveal Path: Coming Soon"><span class="symbol">⌁</span></button>
+  <button id="miracle" title="Radiance"><span class="symbol">✦</span><span class="label" style="display:none">RADIANCE</span></button>
+  <div class="abilityHint">⌁ Path &nbsp; ✦ Radiance</div>
+</div>
+
+
+<div id="pauseMenu" class="screen">
+  <div class="card">
+    <h1>Game Paused</h1>
+    <p style="color:#ded2aa">Take a breath. The darkness will wait.</p>
+    <div class="pauseButtons">
+      <button id="resumeGame">▶ Resume</button>
+      <button id="restartLevel">↺ Restart Level</button>
+      <div style="border:1px solid rgba(240,198,110,.22);border-radius:14px;padding:10px;background:rgba(0,0,0,.18)">
+        <b style="color:#f0c66e">🧪 Level Select</b><br/>
+        <select id="pauseLevelSelect" style="margin-top:8px;padding:8px 10px;border-radius:12px;background:#07101f;color:#fff1bf;border:1px solid #d9b45a;font-family:Georgia,serif;width:min(280px,74vw)"></select>
+        <button id="playPauseSelectedLevel" style="margin-top:8px">Play Selected Level</button>
+      </div>
+
+    <div id="audioControls">
+      <div class="audioTitle">AUDIO</div>
+      <label>Music <input id="musicVolumeSlider" type="range" min="0" max="100" value="55"></label>
+      <label>SFX <input id="sfxVolumeSlider" type="range" min="0" max="100" value="90"></label>
+    </div>
+
+      <button id="returnTitle">🏠 Return to Title</button>
+    </div>
+  </div>
+</div>
+
+<div id="overlay" class="screen"><div class="card"><h1>Rise Again</h1><p>The light shines in the darkness, and the darkness has not overcome it.</p><button id="restart">Rise Again</button></div></div>
+
+<div id="faithShop" class="screen">
+  <div class="card">
+    <h1>Sanctuary Offering</h1>
+    <p>Major blessings are expensive. Save Faith as Hope early, then purchase powerful region blessings as your flock grows.</p>
+    <p>Available Faith: <span id="shopFaith">0</span></p>
+    <div id="resultsBreakdown"></div>
+    <div class="shopGrid">
+      <div class="shopItem"><b>Light the Road</b><p>Cost: 1000 Faith. Extra lanterns and light fragments near the Sanctuary path next region.</p><button id="buyRoad">Buy</button></div>
+      <div class="shopItem"><b>Sanctuary Blessing</b><p>Cost: 1250 Faith. Begin the next region with +25 temporary health.</p><button id="buyBlessing">Buy</button></div>
+      <div class="shopItem"><b>Shepherd's Call</b><p>Cost: 1500 Faith. Several souls begin closer to the Sanctuary next region.</p><button id="buyCall">Buy</button></div>
+    </div>
+    <button id="finishShop">Save Remaining Faith as Hope</button>
+  </div>
+</div>
+
+<div id="sanctuary" class="screen">
+  <div class="card">
+    <h1 id="sanctuaryHeader">Sanctuary</h1>
+    <p id="sanctuaryText"></p>
+    <button id="nextMission">Continue Game</button>
+  </div>
+</div>
+
+<div id="heaven" class="screen">
+  <div class="card">
+    <h1>Well done, good and faithful servant.</h1>
+    <p style="font-size:18px">Every soul you brought home now shines in Heaven.</p>
+    <div id="heavenStats" style="margin:16px auto;text-align:left;max-width:460px"></div>
+    <p><i>"Enter into the joy of your Lord."</i><br>Matthew 25:23</p>
+    <button id="heavenButton">Return to Title</button>
+  </div>
+</div>
+
+
+
+<script>
+window.aolMusicVolume = Number(localStorage.getItem("aolMusicVolume") || 0.55);
+window.aolSfxVolume = Number(localStorage.getItem("aolSfxVolume") || 0.90);
+window.aolActiveMusic = null;
+const canvas=document.getElementById("game"),ctx=canvas.getContext("2d");
+let W,H,DPR,last=0;
+
+function updateUIScale(){
+  const root=document.documentElement;
+  const shortSide=Math.min(W,H);
+  const longSide=Math.max(W,H);
+  let scale=1;
+  if(longSide<=700 || shortSide<=390) scale=.74;
+  else if(longSide<=850 || shortSide<=430) scale=.82;
+  else if(longSide<=1000 || shortSide<=520) scale=.9;
+  else scale=1;
+  root.style.setProperty("--ui-scale", scale.toFixed(2));
+}
+
+function resize(){
+ const vw = window.visualViewport ? window.visualViewport.width : innerWidth;
+ const vh = window.visualViewport ? window.visualViewport.height : innerHeight;
+ DPR=Math.min(devicePixelRatio||1,2);
+ canvas.width=Math.floor(vw*DPR);canvas.height=Math.floor(vh*DPR);
+ canvas.style.width=vw+"px";canvas.style.height=vh+"px";
+ ctx.setTransform(DPR,0,0,DPR,0,0);W=vw;H=vh;updateUIScale();
+}
+addEventListener("resize",resize);
+if(window.visualViewport) window.visualViewport.addEventListener("resize",resize);
+resize();
+const VISUAL_SCALE=.88;
+
+const MAX_PARTICLES=160, MAX_LIGHTS=140, MAX_SHADOWS=42, MAX_SAVED_STARS=180;
+function capArray(arr,max){
+ if(arr&&arr.length>max)arr.splice(0,arr.length-max);
+}
+function releaseFrameCleanup(){
+ if(!state)return;
+ capArray(state.particles,MAX_PARTICLES);
+ capArray(state.lights,MAX_LIGHTS);
+ capArray(state.shadows,MAX_SHADOWS);
+ capArray(state.savedStars,MAX_SAVED_STARS);
+}
+
+const rand=(a,b)=>Math.random()*(b-a)+a,clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+let pointer={x:W/2,y:H*.72},joy={active:false,x:0,y:0,baseX:0,baseY:0},state=null,pendingFaith=0;
+let hope=Number(localStorage.getItem("aolHope")||0), regionIndex=Number(localStorage.getItem("aolRegion")||0);
+let campaignStats=JSON.parse(localStorage.getItem("aolCampaignStats")||'{"fading":0,"comforted":0,"blessed":0,"wounded":0,"lonely":0,"total":0}');
+let audioCtx=null,soundOn=localStorage.getItem("aolSound")==="0"?false:true;
+function initAudio(){if(!soundOn)return;if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==="suspended")audioCtx.resume()}
+function tone(freq=440,dur=.12,type="sine",gain=.06,delay=0){if(!soundOn)return;initAudio();const t=audioCtx.currentTime+delay,o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.setValueAtTime(freq,t);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(gain,t+.015);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g);g.connect(audioCtx.destination);o.start(t);o.stop(t+dur+.03)}
+function noise(dur=.18,gain=.04){if(!soundOn)return;initAudio();const b=audioCtx.createBuffer(1,audioCtx.sampleRate*dur,audioCtx.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);const s=audioCtx.createBufferSource(),g=audioCtx.createGain();s.buffer=b;g.gain.value=gain;s.connect(g);g.connect(audioCtx.destination);s.start()}
+function sfx(n){if(!soundOn)return;if(n==="click")tone(520,.06,"triangle",.035);if(n==="rescue"){tone(660,.13,"sine",.05);tone(990,.18,"sine",.035,.06)}if(n==="heal"){tone(392,.16);tone(523,.2,"sine",.045,.08);tone(784,.24,"sine",.035,.16)}if(n==="radiance"){tone(220,.35,"sawtooth",.035);tone(440,.45,"sine",.055,.05);tone(880,.55,"triangle",.05,.1);noise(.35,.025)}if(n==="chest"){tone(196,.5,"sine",.08);tone(392,.65,"sine",.06,.05);tone(784,.75,"triangle",.045,.12)}if(n==="bell"){tone(220,.9,"sine",.07);tone(440,1.1,"sine",.045,.04)}if(n==="hurt"){tone(110,.18,"sawtooth",.05);noise(.18,.035)}if(n==="lost"){tone(180,.25,"sawtooth",.045);tone(90,.3,"sine",.035,.08)}}
+
+const LEVELS=[
+ {name:"Forgotten Village",short:"REGION 1",target:20,map:{w:2500,h:1800},palette:["#111a32","#070b14","#010207"],gate:{x:300,y:1540},bell:{x:1340,y:900},kind:"village",fog:"#dfe8ff",safe:"SANCTUARY ROAD"},
+ {name:"Broken Farmlands",short:"REGION 2",target:30,map:{w:2900,h:2050},palette:["#1a1824","#12100c","#030207"],gate:{x:260,y:1760},bell:{x:1900,y:670},kind:"farms",fog:"#f0d9a8",safe:"LANTERN FIELDS"},
+ {name:"Abandoned Abbey",short:"REGION 3",target:40,map:{w:3150,h:2250},palette:["#11121f","#090912","#010106"],gate:{x:300,y:1950},bell:{x:2350,y:850},kind:"abbey",fog:"#b8c2ff",safe:"CLOISTER ROAD"},
+ {name:"Blackwood Forest",short:"REGION 4",target:50,map:{w:3300,h:2350},palette:["#071612","#04100c","#010604"],gate:{x:300,y:2020},bell:{x:2050,y:1180},kind:"forest",fog:"#b8ffdb",safe:"MOSSY PATH"},
+ {name:"City of Ash",short:"REGION 5",target:60,map:{w:3500,h:2450},palette:["#1f1714","#100b0a","#030202"],gate:{x:320,y:2100},bell:{x:2500,y:980},kind:"city",fog:"#f0b8a0",safe:"ASHEN STREET"},
+ {name:"Valley of Bones",short:"REGION 6",target:70,map:{w:3700,h:2600},palette:["#19170f","#0d0b08","#020201"],gate:{x:330,y:2260},bell:{x:2700,y:1200},kind:"bones",fog:"#f1e1b0",safe:"BATTLEFIELD ROAD"},
+ {name:"Silent Marsh",short:"REGION 7",target:80,map:{w:3900,h:2700},palette:["#071619","#031012","#010405"],gate:{x:340,y:2350},bell:{x:2850,y:1320},kind:"marsh",fog:"#9ef4ff",safe:"REED PATH"},
+ {name:"Great Cathedral",short:"REGION 8",target:90,map:{w:4100,h:2850},palette:["#171225","#0a0712","#020106"],gate:{x:360,y:2480},bell:{x:3000,y:1200},kind:"cathedral",fog:"#d8c5ff",safe:"NAVE ROAD"},
+ {name:"Shattered Heavens",short:"REGION 9",target:100,map:{w:4300,h:3000},palette:["#09112a","#05071a","#01020a"],gate:{x:370,y:2600},bell:{x:3150,y:1100},kind:"heavens",fog:"#bfe4ff",safe:"RIVER OF LIGHT"},
+ {name:"Gates of Night",short:"REGION 10",target:120,map:{w:4600,h:3200},palette:["#050509","#020204","#000000"],gate:{x:390,y:2780},bell:{x:3400,y:1350},kind:"night",fog:"#ffffff",safe:"FINAL SANCTUARY"}
+];
+const ARMOR=[
+ {name:"Shoes of Peace",short:"Shoes",desc:"+10% Pilgrim speed, +15% follower speed"},
+ {name:"Shield of Faith",short:"Shield",desc:"Radiance costs 85 Faith"},
+ {name:"Breastplate of Righteousness",short:"Breastplate",desc:"+25 max health"},
+ {name:"Belt of Truth",short:"Belt",desc:"Chests shimmer from farther away"},
+ {name:"Helmet of Salvation",short:"Helmet",desc:"Prayer attracts darkness slower"},
+ {name:"Sword of the Spirit",short:"Sword",desc:"Radiance reaches farther"},
+];
+
+function screen(id){
+ if(id==="faithShop"||id==="sanctuary"||id==="heaven"||id==="overlay"){
+   try{ if(window.stopUploadedMusic) window.stopUploadedMusic(); }catch(e){}
+ }
+ for(const el of document.querySelectorAll(".screen"))el.style.display="none";
+ document.getElementById("ui").style.display="none";
+ document.getElementById(id).style.display="flex";
+}
+function showPauseMenu(){if(!state||state.mode!=="play")return;state.paused=true;document.getElementById("pauseMenu").style.display="flex";document.getElementById("ui").style.display="block";updatePauseSoundButton();populatePauseLevelSelect()}
+function closePauseMenu(){document.getElementById("pauseMenu").style.display="none";if(state&&!state.armorCelebrating)state.paused=false}
+function updatePauseSoundButton(){const b=document.getElementById("pauseSoundToggle");if(b)b.textContent=soundOn?"🔊 Sound: On":"🔇 Sound: Off"}
+function populatePauseLevelSelect(){
+ const sel=document.getElementById("pauseLevelSelect");
+ if(!sel)return;
+ if(sel.options.length===0){
+   LEVELS.forEach((l,i)=>{let o=document.createElement("option");o.value=i;o.textContent=`${i+1}. ${l.name}`;sel.appendChild(o);});
+   let h=document.createElement("option");
+   h.value="heaven";
+   h.textContent="View Heaven Ending";
+   sel.appendChild(h);
+ }
+ sel.value=String(regionIndex||0);
+}
+function populateLevelSelect(){
+ const sel=document.getElementById("levelSelect");
+ if(!sel||sel.options.length)return;
+ LEVELS.forEach((l,i)=>{let o=document.createElement("option");o.value=i;o.textContent=`${i+1}. ${l.name}`;sel.appendChild(o);});
+}
+
+function viewHeavenEndingTest(){
+ try{ if(window.stopUploadedMusic) window.stopUploadedMusic(); }catch(e){}
+ try{ if(window.playHeavenMusic) window.playHeavenMusic(); }catch(e){}
+ const armorCount=(JSON.parse(localStorage.getItem("aolArmor")||"[]")).length;
+ const total=(campaignStats&&campaignStats.total)?campaignStats.total:LEVELS[LEVELS.length-1].target;
+ const hs=document.getElementById("heavenStats");
+ if(hs){
+   hs.innerHTML =
+     `<div class="resultRow"><span>Regions Cleansed</span><b>10 / 10</b></div>`+
+     `<div class="resultRow"><span>Souls Saved</span><b>${total}</b></div>`+
+     `<div class="resultRow"><span>Armor of God</span><b>${armorCount} / 6</b></div>`+
+     `<div class="resultRow"><span>Fading Souls</span><b>${(campaignStats&&campaignStats.fading)||0}</b></div>`+
+     `<div class="resultRow"><span>Comforted Souls</span><b>${(campaignStats&&campaignStats.comforted)||0}</b></div>`+
+     `<div class="resultRow"><span>Blessed Souls</span><b>${(campaignStats&&campaignStats.blessed)||0}</b></div>`+
+     `<div class="resultRow"><span>Wounded Souls</span><b>${(campaignStats&&campaignStats.wounded)||0}</b></div>`+
+     `<div class="resultRow"><span>Lonely Souls</span><b>${(campaignStats&&campaignStats.lonely)||0}</b></div>`;
+ }
+ state=null;
+ 
+try{
+  localStorage.setItem("aolGameCompleted","1");
+  localStorage.setItem("aolHeavenSeen","1");
+}catch(e){}
+
+screen("heaven");
+}
+
+function showMenu(){screen("menu");state=null;populateLevelSelect();updateSoundButton()}
+function showMission(){
+ const pm=document.getElementById("pauseMenu");if(pm)pm.style.display="none";
+ resetJoy();
+ for(const el of document.querySelectorAll(".screen"))el.style.display="none";
+ document.getElementById("ui").style.display="block";
+ if(typeof hideArmorPopup==="function")hideArmorPopup();
+ if(state){state.mode="play";state.paused=false;state.armorCelebrating=false;state.delivering=false;}
+}
+function updateSoundButton(){const b=document.getElementById("soundToggle");if(b)b.textContent=soundOn?"Sound: On":"Sound: Off"}
+
+function chooseSanctuaryLocation(MAP){
+ const level=regionIndex||0;
+
+ // Handcrafted percent-based Sanctuary spawn sets by region.
+ // Kept away from extreme edges so the arrival animation remains readable.
+ const sanctuaryLayouts=[
+   [[.16,.82],[.18,.24]],
+   [[.14,.82],[.22,.30],[.78,.78]],
+   [[.14,.84],[.76,.30],[.28,.24]],
+   [[.16,.78],[.82,.74],[.22,.30]],
+   [[.18,.80],[.78,.26],[.82,.72]],
+   [[.14,.76],[.76,.78],[.22,.28]],
+   [[.18,.82],[.72,.24],[.82,.64]],
+   [[.16,.80],[.80,.28],[.72,.72]],
+   [[.18,.78],[.78,.24],[.84,.76]],
+   [[.14,.82],[.82,.22],[.80,.72]]
+ ];
+
+ const options=sanctuaryLayouts[Math.min(level,sanctuaryLayouts.length-1)]||sanctuaryLayouts[0];
+ const pt=options[Math.floor(Math.random()*options.length)];
+ return {
+   x:clamp(pt[0]*MAP.w,220,MAP.w-220),
+   y:clamp(pt[1]*MAP.h,220,MAP.h-220)
+ };
+}
+function chooseChestLocation(MAP,gate){
+ const level=regionIndex||0;
+ const chestLayouts=[
+   [[.56,.34],[.72,.60]],
+   [[.50,.30],[.72,.42],[.64,.72]],
+   [[.46,.26],[.70,.48],[.54,.74]],
+   [[.34,.30],[.58,.52],[.78,.36],[.70,.76]],
+   [[.38,.38],[.60,.28],[.76,.56],[.50,.76]],
+   [[.32,.62],[.52,.36],[.78,.30],[.72,.68]],
+   [[.36,.28],[.58,.58],[.82,.70],[.26,.72]],
+   [[.30,.44],[.54,.70],[.76,.36],[.84,.68]],
+   [[.34,.68],[.56,.34],[.80,.52],[.70,.78]],
+   [[.32,.54],[.54,.30],[.78,.66],[.84,.38]]
+ ];
+ let options=chestLayouts[Math.min(level,chestLayouts.length-1)]||chestLayouts[0];
+ let candidates=options.map(pt=>({x:clamp(pt[0]*MAP.w,220,MAP.w-220),y:clamp(pt[1]*MAP.h,180,MAP.h-220)}));
+ candidates=candidates.filter(c=>!gate||Math.hypot(state.chest.x-gate.x,state.chest.y-gate.y)>=360);
+ if(!candidates.length)candidates=[{x:clamp(MAP.w*.62,220,MAP.w-220),y:clamp(MAP.h*.42,180,MAP.h-220)}];
+ return candidates[Math.floor(Math.random()*candidates.length)];
+}
+
+
+
+function resetTransientGameplayState(){
+ try{
+   const ids=["armorCelebration","armorPopup","armorBackdrop","pauseMenu","heaven","sanctuary","faithShop","overlay"];
+   ids.forEach(id=>{
+     const el=document.getElementById(id);
+     if(el)el.style.display="none";
+   });
+   if(typeof resetJoy==="function")resetJoy();
+ }catch(e){}
+
+ try{
+   if(state){
+     state.paused=false;
+     state.armorCelebrating=false;
+     state.delivering=false;
+     state.flash=0;
+     state.flashTimer=0;
+     state.savedBurst=0;
+     state.heavenBurst=0;
+     state.particles=[];
+     state.deliveredQueue=[];
+   }
+ }catch(e){}
+}
+
+function newGame(advance=false){
+ if(advance){regionIndex=Math.min(regionIndex+1,LEVELS.length-1);localStorage.setItem("aolRegion",regionIndex)}
+ const R=LEVELS[Math.min(regionIndex,LEVELS.length-1)], MAP=R.map;
+ const sanctuaryLoc=chooseSanctuaryLocation(MAP);
+ const ownedArmor=JSON.parse(localStorage.getItem("aolArmor")||"[]");
+ let baseMax=ownedArmor.includes("Breastplate of Righteousness")?125:100;
+ const blessings=JSON.parse(localStorage.getItem("aolBlessings")||"{}");
+ if(blessings.blessing)baseMax+=25;
+ state={mode:"play",paused:false,delivering:false,R,MAP,t:0,flash:0,flashKind:null,flashTimer:0,flashDuration:0,radianceRing:0,shake:0,cam:{x:0,y:0},player:{x:sanctuaryLoc.x+65,y:sanctuaryLoc.y+35,hp:baseMax,maxHp:baseMax,speed:ownedArmor.includes("Shoes of Peace")?209:190,lastX:sanctuaryLoc.x+65,lastY:sanctuaryLoc.y+35,still:0,praying:false},gate:{x:sanctuaryLoc.x,y:sanctuaryLoc.y,r:130},bell:{x:R.bell.x,y:R.bell.y,r:72,ringing:0},chest:{x:0,y:0,open:false,progress:0,item:ARMOR[Math.min(regionIndex,ARMOR.length-1)]},souls:[],wounded:[],followers:[],deliveredQueue:[],shadows:[],lights:[],lanterns:[],particles:[],savedStars:[],revealPath:{active:false,timer:0,points:[]},faith:0,delivered:0,regionTarget:R.target,bellRestored:false,darkness:0,spawnTimer:0,regionComplete:false,armorCelebrating:false,pickupCooldown:0, armorCelebrating:false,ownedArmor,stats:{fading:0,comforted:0,blessed:0,wounded:0,lonely:0,baseFaith:0,maturityBonus:0,lonelyBonus:0,deliveryFaith:0,armorFaith:0,lightFaith:0,prayerFaith:0,faithLost:0}};
+ state.sanctuaryArrivalPlayed=false;seedWorld(blessings);const chestLoc=chooseChestLocation(MAP,state.gate);state.chest.x=chestLoc.x;state.chest.y=chestLoc.y;localStorage.removeItem("aolBlessings");resetTransientGameplayState();showMission();updateHUD();playRegionMusic();
+}
+function seedWorld(blessings={}){
+ const R=state.R,MAP=state.MAP;
+ for(let i=0;i<16+regionIndex*5;i++)spawnSoul(rand(650,MAP.w-170),rand(220,MAP.h-260));
+ for(let i=0;i<7+regionIndex*2;i++)spawnWounded(rand(740,MAP.w-180),rand(250,MAP.h-260));
+ spawnNewerSoulTypes();
+ for(let i=0;i<7+regionIndex*2;i++)spawnShadow(rand(880,MAP.w-160),rand(180,MAP.h-320),"wraith");
+ if(regionIndex>0)for(let i=0;i<3+regionIndex;i++)spawnShadow(rand(900,MAP.w-200),rand(200,MAP.h-360),"corrupter");
+ for(let i=0;i<76+regionIndex*18;i++)spawnLight(rand(450,MAP.w-130),rand(150,MAP.h-130));
+ seedLanterns();
+ /* Lonely Souls now handled by spawnNewerSoulTypes */
+ if(blessings.road)for(let i=0;i<25;i++)spawnLight(rand(state.gate.x+60,state.gate.x+520),rand(state.gate.y-500,state.gate.y+80));
+ if(blessings.call)for(let i=0;i<6;i++)spawnSoul(rand(state.gate.x+220,state.gate.x+620),rand(state.gate.y-520,state.gate.y-120));
+ releaseFrameCleanup();
+}
+function spawnSoul(x,y){state.souls.push({x,y,vx:rand(-18,18),vy:rand(-18,18),p:rand(0,7),special:"fading"})}
+function spawnLonely(x,y){state.souls.push({x,y,vx:0,vy:0,p:rand(0,7),special:"lonely"})}
+function spawnNewerSoulTypes(){
+ const MAP=state.MAP;
+ // Level 2 introduces Lonely Souls. Make them more present from that point forward.
+ if(regionIndex>=1){
+   const lonelyCount=Math.min(2+regionIndex,6);
+   for(let i=0;i<lonelyCount;i++){
+     spawnLonely(rand(620,MAP.w-180),rand(180,MAP.h-240));
+   }
+ }
+ // Level 3+ should feature more Wounded Souls because they become a major mechanic.
+ if(regionIndex>=2){
+   const extraWounded=Math.min(4+regionIndex*2,14);
+   for(let i=0;i<extraWounded;i++){
+     spawnWounded(rand(680,MAP.w-180),rand(220,MAP.h-260));
+   }
+ }
+}
+function spawnWounded(x,y){state.wounded.push({x,y,vx:rand(-7,7),vy:rand(-7,7),heal:0,p:rand(0,7),special:"wounded"})}
+function spawnShadow(x,y,kind="wraith"){state.shadows.push({x,y,kind,speed:kind==="corrupter"?rand(46,66):rand(38,58),cool:0,p:rand(0,7),smoke:[],resist:kind==="corrupter"?1:0})}
+function spawnLight(x,y){state.lights.push({x,y,p:rand(0,7)})}
+function seedLanterns(){
+ if(!state||!state.MAP)return;
+ const MAP=state.MAP;
+ const level=regionIndex||0;
+
+ // Lantern count progression:
+ // Level 1 = 1 lantern, Levels 2-3 = 2 lanterns, Levels 4-10 = 3 lanterns.
+ const desiredCount = level===0 ? 1 : level<3 ? 2 : 3;
+
+ // Percent-based handcrafted layouts. Each set intentionally contains at least 3 points,
+ // then desiredCount chooses how many are used for that level.
+ const layouts=[
+   [
+     [[.42,.58],[.70,.36],[.26,.72]],
+     [[.34,.66],[.66,.42],[.80,.70]]
+   ],
+   [
+     [[.34,.62],[.72,.36],[.52,.78]],
+     [[.28,.42],[.68,.70],[.84,.36]],
+     [[.48,.30],[.80,.60],[.30,.74]]
+   ],
+   [
+     [[.28,.34],[.66,.52],[.82,.76]],
+     [[.42,.72],[.78,.30],[.24,.42]],
+     [[.24,.60],[.58,.28],[.82,.54]]
+   ],
+   [
+     [[.25,.48],[.56,.70],[.78,.34]],
+     [[.36,.30],[.62,.52],[.84,.68]],
+     [[.22,.72],[.50,.42],[.76,.22]]
+   ],
+   [
+     [[.26,.36],[.54,.58],[.80,.42]],
+     [[.34,.68],[.62,.30],[.84,.70]],
+     [[.22,.50],[.50,.24],[.76,.62]]
+   ],
+   [
+     [[.24,.64],[.52,.40],[.80,.28]],
+     [[.32,.30],[.60,.70],[.82,.50]],
+     [[.20,.44],[.48,.74],[.74,.34]]
+   ],
+   [
+     [[.28,.30],[.58,.58],[.82,.72]],
+     [[.22,.68],[.50,.42],[.78,.28]],
+     [[.36,.76],[.62,.34],[.86,.56]]
+   ],
+   [
+     [[.24,.42],[.52,.68],[.78,.36]],
+     [[.34,.28],[.60,.50],[.84,.72]],
+     [[.20,.66],[.48,.32],[.74,.58]]
+   ],
+   [
+     [[.26,.70],[.54,.38],[.82,.54]],
+     [[.34,.48],[.62,.76],[.86,.30]],
+     [[.22,.34],[.50,.62],[.78,.78]]
+   ],
+   [
+     [[.24,.58],[.52,.32],[.80,.66]],
+     [[.30,.72],[.60,.46],[.86,.24]],
+     [[.20,.38],[.50,.74],[.76,.52]]
+   ]
+ ];
+
+ const sets=layouts[Math.min(level,layouts.length-1)]||layouts[0];
+ const chosen=sets[Math.floor(Math.random()*sets.length)];
+ state.lanterns=[];
+
+ for(const pt of chosen){
+   if(state.lanterns.length>=desiredCount)break;
+
+   let loc={x:pt[0]*MAP.w,y:pt[1]*MAP.h};
+   loc.x=clamp(loc.x,260,MAP.w-260);
+   loc.y=clamp(loc.y,220,MAP.h-220);
+
+   // Keep lanterns away from the Sanctuary.
+   if(state.gate&&Math.hypot(loc.x-state.gate.x,loc.y-state.gate.y)<320){
+     loc.x=clamp(loc.x+360,260,MAP.w-260);
+     loc.y=clamp(loc.y-260,220,MAP.h-220);
+   }
+
+   // Keep lanterns spread apart.
+   let safe=true;
+   for(const l of state.lanterns){
+     if(Math.hypot(loc.x-l.x,loc.y-l.y)<420)safe=false;
+   }
+   if(safe)state.lanterns.push({x:loc.x,y:loc.y,r:135,p:rand(0,7),style:state.R.kind});
+ }
+
+ // Failsafe fill if spacing checks removed too many.
+ let attempts=0;
+ while(state.lanterns.length<desiredCount && attempts<40){
+   attempts++;
+   let loc={x:rand(360,MAP.w-360),y:rand(280,MAP.h-280)};
+   if(state.gate&&Math.hypot(loc.x-state.gate.x,loc.y-state.gate.y)<320)continue;
+   let safe=true;
+   for(const l of state.lanterns){
+     if(Math.hypot(loc.x-l.x,loc.y-l.y)<420)safe=false;
+   }
+   if(safe)state.lanterns.push({x:loc.x,y:loc.y,r:135,p:rand(0,7),style:state.R.kind});
+ }
+
+ if(state.lanterns.length===0){
+   state.lanterns.push({x:clamp(MAP.w*.45,260,MAP.w-260),y:clamp(MAP.h*.55,220,MAP.h-220),r:135,p:rand(0,7),style:state.R.kind});
+ }
+}
+function addFaith(n,x,y){state.faith+=n;pop("+"+Math.floor(n),x,y,"#ffe38e")}
+function pop(text,x,y,color){if(!state||!state.particles)return;state.particles.push({text,x,y,life:1,color});capArray(state.particles,MAX_PARTICLES)}
+function spark(x,y,n=20,color="#ffe38e"){if(!state||!state.particles)return;n=Math.min(n,28);for(let i=0;i<n;i++)state.particles.push({x,y,vx:rand(-95,95),vy:rand(-95,75),r:rand(2,5),life:rand(.35,.85),color});capArray(state.particles,MAX_PARTICLES)}
+
+function activeLantern(){
+ if(!state||!state.lanterns||!state.player)return null;
+ for(const l of state.lanterns){
+   if(dist(state.player,l)<((l.r||135)+35))return l;
+ }
+ return null;
+}
+function collectSoulAsFollower(s){
+ if(!state||!state.player||!s||!isFinite(s.x)||!isFinite(s.y))return;
+ const type=s.special||"fading";
+ state.followers.push({
+   x:state.player.x+rand(-12,12),
+   y:state.player.y+rand(24,38),
+   p:isFinite(s.p)?s.p:rand(0,7),
+   age:0,
+   stage:0,
+   special:type
+ });
+ const reward=type==="lonely"?75:25;
+ state.stats.baseFaith=(state.stats.baseFaith||0)+reward;
+ state.faith=(state.faith||0)+reward;
+ if(Math.random()<.65)pop("+"+reward,state.player.x,state.player.y-48,type==="lonely"?"#ffc7f7":"#dbe8ff");
+}
+function collectWoundedAsFollower(w){
+ if(!state||!state.player||!w||!isFinite(w.x)||!isFinite(w.y))return;
+ state.followers.push({
+   x:state.player.x+rand(-12,12),
+   y:state.player.y+rand(24,38),
+   p:isFinite(w.p)?w.p:rand(0,7),
+   age:0,
+   stage:0,
+   special:"wounded"
+ });
+ state.stats.baseFaith=(state.stats.baseFaith||0)+50;
+ state.faith=(state.faith||0)+50;
+ if(Math.random()<.65)pop("+50",state.player.x,state.player.y-48,"#caa0ff");
+}
+function update(dt){
+ if(!state||state.mode!=="play"||state.paused||state.armorCelebrating)return;
+ state.t+=dt;
+ if(state.flashTimer>0){
+   state.flashTimer=Math.max(0,state.flashTimer-dt);
+   const pct=state.flashDuration?state.flashTimer/state.flashDuration:0;
+   if(state.flashKind==="radiance"){
+     state.flash=.34*pct;
+   }else{
+     state.flash=.10*pct;
+   }
+ }else{
+   state.flash=0;
+ }
+ state.pickupCooldown=Math.max(0,(state.pickupCooldown||0)-dt);
+ state.radianceRing=Math.max(0,(state.radianceRing||0)-dt);
+ if(state.delivering){updateDelivery(dt);updateParticles(dt);releaseFrameCleanup();updateCamera();updateHUD();return}
+ const p=state.player,MAP=state.MAP;p.lastX=p.x;p.lastY=p.y;
+ if(joy.active){
+   p.x += joy.x * p.speed * dt;
+   p.y += joy.y * p.speed * dt;
+ }
+ p.x=clamp(p.x,45,MAP.w-45);p.y=clamp(p.y,80,MAP.h-55);if(insideGate(p)){clearRevealPath();}
+ let moved=Math.hypot(p.x-p.lastX,p.y-p.lastY);p.still=moved<1.2?p.still+dt:0;
+ let prayerThreshold=state.ownedArmor.includes("Shoes of Peace")?.95:1.25;
+ p.praying=p.still>prayerThreshold&&state.followers.length>0&&!insideGate(p);
+ let faithRate=0;for(const f of state.followers){f.age+=dt;if(f.age>60)f.stage=2;else if(f.age>20)f.stage=1;faithRate+=f.stage===2?1:f.stage===1?.5:.25}
+ if(p.praying){
+   const lantern=activeLantern();
+   faithRate*=lantern?3:2;
+   if(lantern){
+     const lid=Math.round(lantern.x)+"_"+Math.round(lantern.y);
+     if(state.lastLanternSfxId!==lid){
+       state.lastLanternSfxId=lid;
+       if(typeof playLanternActivationSFX==="function")playLanternActivationSFX();
+     }
+   }else{
+     state.lastLanternSfxId=null;
+   }
+   if(lantern&&Math.random()<dt*.45)pop("🕯️ Lantern Blessing x3",p.x,p.y-72,"#ffcf73");
+   state.darkness+=dt*(state.ownedArmor.includes("Helmet of Salvation")?.075:.12)
+ }
+ if(faithRate>0){let gain=faithRate*dt;state.faith+=gain;state.stats.prayerFaith+=gain;if(Math.random()<dt*.55)pop("+"+faithRate.toFixed(1),p.x,p.y-45,"#ffe38e")}
+ for(const s of [...state.souls,...state.wounded]){if(s.special!=="lonely"){s.x+=s.vx*dt;s.y+=s.vy*dt;if(s.x<50||s.x>MAP.w-50)s.vx*=-1;if(s.y<80||s.y>MAP.h-60)s.vy*=-1;if(Math.random()<.006){s.vx=rand(-18,18);s.vy=rand(-18,18)}}}
+ if(state.pickupCooldown<=0){
+ for(let i=state.souls.length-1;i>=0;i--){
+   let s=state.souls[i];
+   if(!s||!isFinite(s.x)||!isFinite(s.y)){state.souls.splice(i,1);continue;}
+   if(dist(p,s)<44){
+     state.souls.splice(i,1);
+     collectSoulAsFollower(s);playSoulRescueSFX();
+     state.pickupCooldown=.08;
+     break;
+   }
+ }
+}
+ for(let i=state.wounded.length-1;i>=0;i--){
+ let w=state.wounded[i];
+ if(!w||!isFinite(w.x)||!isFinite(w.y)){state.wounded.splice(i,1);continue;}
+ if(dist(p,w)<56){
+   w.heal=(w.heal||0)+dt;
+   if(state.pickupCooldown<=0&&w.heal>=1.55){
+     state.wounded.splice(i,1);
+     collectWoundedAsFollower(w);playSoulRescueSFX();
+     state.pickupCooldown=.08;
+     break;
+   }
+ }else w.heal=Math.max(0,(w.heal||0)-dt*.35);
+}
+ sanitizeFollowers();updateFollowerFormation(dt);
+ if(state.followers.length&&insideGate(p)){
+   if(!state.sanctuaryArrivalPlayed){
+     state.sanctuaryArrivalPlayed=true;
+     if(typeof playSanctuarySFX==="function")playSanctuarySFX();
+   }
+   startDeliverySequence();
+ }
+ updateChestBell(dt);
+ updateSpawns(dt);
+ updateShadows(dt);
+ updateLights(dt);
+ updateParticles(dt);
+ if(state.revealPath&&state.revealPath.active){
+   state.revealPath.timer=Math.max(0,(state.revealPath.timer||0)-dt);
+   if(state.revealPath.timer<=0)clearRevealPath();
+ }
+ updateCamera();updateHUD();
+}
+function sanitizeFollowers(){
+ if(!state||!state.followers)return;
+ for(let i=state.followers.length-1;i>=0;i--){
+   const f=state.followers[i];
+   if(!f||!isFinite(f.x)||!isFinite(f.y))state.followers.splice(i,1);
+ }
+}
+function updateFollowerFormation(dt){const p=state.player;let boost=state.ownedArmor.includes("Shoes of Peace")?1.15:1;if(p.praying){
+let total=Math.max(1,state.followers.length);
+for(let i=0;i<state.followers.length;i++){
+ let f=state.followers[i];
+ let ringIndex=Math.floor(i/10);
+ let countInRing=Math.min(10,total-ringIndex*10);
+ let slot=i-ringIndex*10;
+ let ring=72+ringIndex*36+Math.min(total,20)*2;
+ let ang=state.t*.7 + slot*(Math.PI*2/countInRing);
+ let tx=p.x+Math.cos(ang)*ring;
+ let ty=p.y+Math.sin(ang)*(ring*.72);
+ f.x += (tx-f.x)*6*dt;
+ f.y += (ty-f.y)*6*dt;
+}}else{let lead=p;for(const f of state.followers){let fd=dist(f,lead),desired=32;if(fd>desired){f.x+=(lead.x-f.x)/fd*142*boost*dt;f.y+=(lead.y-f.y)/fd*142*boost*dt}lead=f}}}
+function updateChestBell(dt){const p=state.player;if(state.chest&&!state.chest.open&&dist(p,state.chest)<58){state.chest.progress+=dt;if(state.chest.progress>=3){state.chest.open=true;if(typeof clearRevealPath==='function')clearRevealPath();clearRevealPath();if(!state.ownedArmor.includes(state.chest.item.name)){state.ownedArmor.push(state.chest.item.name);localStorage.setItem("aolArmor",JSON.stringify(state.ownedArmor))}applyArmorBoost(state.chest.item.name);sfx("chest");triggerFlash("sanctuary",.30,.10);showArmorCelebration(state.chest.item.name);state.stats.armorFaith+=150;addFaith(150,state.chest.x,state.chest.y);spark(state.chest.x,state.chest.y,36)}}else if(state.chest&&!state.chest.open)state.chest.progress=Math.max(0,state.chest.progress-dt*.7);
+ if(dist(p,state.bell)<state.bell.r&&!state.bellRestored&&p.still>1.3){state.bellRestored=true;state.bell.ringing=4;playBellTowerSFX();pop("Bell Restored! +100 Faith + New Souls",state.bell.x,state.bell.y-90,"#ffe38e");addFaith(100,state.bell.x,state.bell.y);spark(state.bell.x,state.bell.y,50);for(let i=0;i<8+regionIndex*2;i++)spawnSoul(rand(state.bell.x-330,state.bell.x+330),rand(state.bell.y-260,state.bell.y+260));for(let i=0;i<3+regionIndex;i++)spawnWounded(rand(state.bell.x-300,state.bell.x+300),rand(state.bell.y-230,state.bell.y+230))}
+ state.bell.ringing=Math.max(0,state.bell.ringing-dt)}
+function updateSpawns(dt){state.spawnTimer-=dt;if(state.spawnTimer<=0&&(state.souls.length+state.wounded.length)<24+regionIndex*6&&state.delivered<state.regionTarget){state.spawnTimer=rand(.9,1.8);let x=rand(780,state.MAP.w-160),y=rand(170,state.MAP.h-230);(()=>{
+   const roll=Math.random();
+   if(regionIndex>=1&&roll<.18)return spawnLonely(x,y);
+   if(regionIndex>=2&&roll<.46)return spawnWounded(x,y);
+   if(roll<.76)return spawnSoul(x,y);
+   return spawnWounded(x,y);
+ })()}}
+function updateShadows(dt){const p=state.player;for(const sh of state.shadows){let target=p,best=dist(sh,p);for(const f of state.followers){let dd=dist(sh,f);if(dd<best){best=dd;target=f}}let oldX=sh.x,oldY=sh.y,sd=Math.max(1,dist(sh,target)),sp=sh.speed+(p.praying?18:0)+Math.min(20,state.darkness);sh.x+=(target.x-sh.x)/sd*sp*dt;sh.y+=(target.y-sh.y)/sd*sp*dt;keepShadowOutOfSanctuary(sh,oldX,oldY);sh.cool-=dt;sh.smoke.push({x:sh.x+rand(-14,14),y:sh.y+rand(-10,13),r:rand(8,18),life:.65});if(sh.smoke.length>22)sh.smoke.shift();sh.smoke.forEach(s=>s.life-=dt);sh.smoke=sh.smoke.filter(s=>s.life>0);if(!insideGate(p)&&dist(sh,p)<32&&sh.cool<=0){p.hp-=8;sh.cool=.9;state.shake=0;playWraithHitSFX();spark(p.x,p.y,8,"#7f88ff");if(p.hp<=0)return gameOver()}for(let i=state.followers.length-1;i>=0;i--){let f=state.followers[i];if(dist(sh,f)<29&&sh.cool<=0){loseFollower(i,sh)}}}if(state.shadows.length<10+regionIndex*3+(p.praying?2:0)&&Math.random()<(.002+state.darkness*.0003))spawnShadow(rand(650,state.MAP.w-120),rand(150,state.MAP.h-180),regionIndex>0&&Math.random()<.28?"corrupter":"wraith")}
+function loseFollower(i,sh){let f=state.followers.splice(i,1)[0];let penalty=f.special==="lonely"?150:f.stage===2?100:f.stage===1?50:25;state.faith=Math.max(0,state.faith-penalty);state.stats.faithLost+=penalty;if(sh.kind==="corrupter"&&state.followers.length>0&&!state.ownedArmor.includes("Helmet of Salvation")){let idx=Math.max(0,Math.min(state.followers.length-1,i-1));let victim=state.followers.length?state.followers.splice(idx,1)[0]:null;if(victim){state.faith=Math.max(0,state.faith-50);state.stats.faithLost+=50;spark(victim.x,victim.y,22,"#b03cff");pop("-50 Faith",victim.x,victim.y,"#e1a8ff")}}sh.cool=.9;playSoulCorruptionSFX();spark(f.x,f.y,20,sh.kind==="corrupter"?"#b03cff":"#6a7189");pop("-"+penalty+" Faith",f.x,f.y,"#ffd0d0")}
+function updateLights(dt){for(let i=state.lights.length-1;i>=0;i--){let l=state.lights[i];if(dist(state.player,l)<28){state.lights.splice(i,1);state.stats.lightFaith++;addFaith(1,l.x,l.y);spark(l.x,l.y,5);spawnLight(rand(430,state.MAP.w-130),rand(130,state.MAP.h-120))}}}
+function updateParticles(dt){for(let i=state.particles.length-1;i>=0;i--){let a=state.particles[i];a.life-=dt;if(a.vx){a.x+=a.vx*dt;a.y+=a.vy*dt;a.vy+=35*dt}else a.y-=34*dt;if(a.life<=0)state.particles.splice(i,1)}}
+function updateCamera(){state.cam.x=clamp(state.player.x-W/2,0,state.MAP.w-W);state.cam.y=clamp(state.player.y-H/2,0,state.MAP.h-H)}
+function screenToWorld(x,y){return{x:x+state.cam.x,y:y+state.cam.y}}
+function insideGate(o){return dist(o,state.gate)<state.gate.r}
+function keepShadowOutOfSanctuary(sh){let safeR=state.gate.r+65,d=dist(sh,state.gate);if(d<safeR){let a=Math.atan2(sh.y-state.gate.y,sh.x-state.gate.x);if(!isFinite(a))a=Math.random()*7;sh.x=state.gate.x+Math.cos(a)*safeR;sh.y=state.gate.y+Math.sin(a)*safeR;sh.cool=Math.max(sh.cool,.25)}}
+
+function startDeliverySequence(){if(state.delivering||!state.followers.length)return;clearRevealPath();state.delivering=true;if(state.revealPath){state.revealPath.active=false;state.revealPath.points=[];}state.deliveredQueue=state.followers.map((f,i)=>({...f,tx:state.gate.x+rand(-28,28),ty:state.gate.y+rand(-12,34),delay:i*.12,entered:false,wait:f.special==="lonely"?.45:0,speed:f.stage===2?190:f.special==="wounded"?135:165}));state.followers=[];pop("Bringing them home...",state.gate.x,state.gate.y-110,"#fff1bf")}
+function updateDelivery(dt){for(const f of state.deliveredQueue){if(f.entered)continue;f.delay-=dt;if(f.delay>0)continue;if(f.wait>0){f.wait-=dt;continue}let dx=f.tx-f.x,dy=f.ty-f.y,d=Math.hypot(dx,dy)||1;f.x+=dx/d*f.speed*dt;f.y+=dy/d*f.speed*dt;if(d<14){f.entered=true;countDeliveredSoul(f)}}state.deliveredQueue=state.deliveredQueue.filter(f=>!f.entered);if(state.deliveredQueue.length===0){state.delivering=false;triggerFlash("radiance",1.0,.50);state.radianceRing=.45;spark(state.gate.x,state.gate.y,35);if(state.delivered>=state.regionTarget)return winRegion()}}
+function countDeliveredSoul(f){let bonus=0,deliveryFaith=10;if(f.special==="lonely"){state.stats.lonely++;state.stats.lonelyBonus+=50;bonus+=50}else if(f.special==="wounded")state.stats.wounded++;else if(f.stage===2)state.stats.blessed++;else if(f.stage===1)state.stats.comforted++;else state.stats.fading++;if(f.special!=="lonely"){if(f.stage===2){bonus+=25;state.stats.maturityBonus+=25}else if(f.stage===1){bonus+=10;state.stats.maturityBonus+=10}}state.stats.deliveryFaith+=deliveryFaith;state.delivered++;addFaith(deliveryFaith+bonus,f.x,f.y);state.savedStars.push({x:state.gate.x+rand(-180,180),y:state.gate.y-rand(170,330),life:999,p:rand(0,7),kind:f.stage});spark(f.x,f.y,28,f.stage===2?"#ffd04b":f.special==="lonely"?"#ffc7f7":"#fff1bf");pop("+1 Soul Saved",f.x,f.y-28,"#fff1bf")}
+
+function applyArmorBoost(name){if(name==="Shoes of Peace")state.player.speed=209;if(name==="Breastplate of Righteousness"){state.player.maxHp=125;state.player.hp=Math.min(125,state.player.hp+25)}}
+function showArmorPopup(item){state.paused=true;const data={"Shoes of Peace":['"And your feet shod with the preparation of the gospel of peace." — Ephesians 6:15',["＋10% Pilgrim Movement Speed","＋15% Follower Movement Speed","Group Prayer activates faster"]],"Shield of Faith":['"Above all, taking the shield of faith..." — Ephesians 6:16',["Radiance costs 85 Faith","Faith shields your flock"]],"Breastplate of Righteousness":['"...having on the breastplate of righteousness." — Ephesians 6:14',["＋25 Maximum Health","Greater resilience in darkness"]],"Belt of Truth":["Truth reveals what darkness hides.",["Hidden things shimmer brighter"]],"Helmet of Salvation":['"...and take the helmet of salvation..." — Ephesians 6:17',["Prayer attracts darkness slower","Corrupters lose power"]],"Sword of the Spirit":['"...the sword of the Spirit, which is the word of God." — Ephesians 6:17',["Radiance reaches farther","Holy blade unlocked"]]};let info=data[item.name]||["A sacred armor piece has been restored.",[item.desc]];document.getElementById("armorPopupTitle").textContent=item.name;document.getElementById("armorPopupVerse").textContent=info[0];document.getElementById("armorPopupBonuses").innerHTML=info[1].map(b=>'<div class="bonus">'+b+'</div>').join("");document.getElementById("armorBackdrop").style.display="block";const p=document.getElementById("armorPopup");p.style.display="block";p.classList.add("show")}
+function hideArmorPopup(){
+ const p=document.getElementById("armorPopup");
+ const b=document.getElementById("armorBackdrop");
+ const celebr=document.getElementById("armorCelebration");
+ if(p){p.style.display="none";p.classList.remove("show");}
+ if(b)b.style.display="none";
+ if(celebr)celebr.style.display="none";
+ if(state){state.armorCelebrating=false;state.paused=false;}
+}
+
+function clearRevealPath(){
+ if(!state || !state.revealPath) return;
+ state.revealPath.active=false;
+ state.revealPath.timer=0;
+ state.revealPath.points=[];
+}
+
+function revealPathAbility(){
+ if(!state||state.mode!=="play"||state.paused||state.delivering)return;
+ if(state.faith<100){
+   if(state.player)pop("Need 100 Faith",state.player.x,state.player.y-65,"#cfeeff");
+   return;
+ }
+ state.faith-=100;
+
+ // Chest first, otherwise Sanctuary. Fallback to Sanctuary if anything is missing.
+ let target=(state.chest&&!state.chest.open)?state.chest:state.gate;
+ if(!target)target=state.gate;
+ if(!target||!state.player)return;
+
+ const dest={x:target.x,y:target.y};
+ state.revealPath={
+   active:true,
+   timer:12,
+   target:dest,
+   points:makeRevealPath(state.player,dest)
+ };
+
+ sfx("bell");
+ pop("The Light shows the way",state.player.x,state.player.y-70,"#cfeeff");
+ updateHUD();
+}
+function makeRevealPath(from,to){
+ let pts=[];
+ if(!from||!to)return pts;
+ let steps=30;
+ let dx=to.x-from.x, dy=to.y-from.y;
+ let len=Math.hypot(dx,dy)||1;
+ for(let i=0;i<=steps;i++){
+   let t=i/steps;
+   let x=from.x+dx*t;
+   let y=from.y+dy*t;
+   let wob=Math.sin(t*Math.PI*3.0+state.t*.85)*58*Math.sin(t*Math.PI);
+   x+=(-dy/len)*wob;
+   y+=(dx/len)*wob;
+   pts.push({x,y});
+ }
+ return pts;
+}
+function updateRevealPath(dt){
+ if(!state||!state.revealPath||!state.revealPath.active)return;
+ const rp=state.revealPath;
+ if(state.chest&&state.chest.open&&rp.kind==='chest'){clearRevealPath();return;}
+
+ if(!state.player||!rp.target){
+   rp.active=false;rp.points=[];return;
+ }
+
+ const isSanctuary = rp.kind==="sanctuary" || (state.gate && Math.hypot(rp.target.x-state.gate.x,rp.target.y-state.gate.y)<5);
+ const d=Math.hypot(state.player.x-rp.target.x,state.player.y-rp.target.y);
+
+ // Sanctuary arrival needs to be generous because the gate/safe zone is large.
+ if(isSanctuary && (insideGate(state.player) || state.delivering || d<330)){
+   rp.active=false;
+   rp.points=[];
+   return;
+ }
+
+ // Chest arrival stays tighter.
+ if(!isSanctuary && d<185){
+   rp.active=false;
+   rp.points=[];
+   return;
+ }
+
+ // Keep the path tethered to the Pilgrim.
+ rp.points=makeRevealPath(state.player,rp.target);
+
+ rp.timer-=dt;
+ if(rp.timer<=0){
+   rp.active=false;
+   rp.points=[];
+ }
+}
+function drawRevealPath(){
+ if(!state||!state.revealPath||!state.revealPath.active||!state.player||!state.revealPath.target)return;
+ const rp=state.revealPath;
+ const start=state.player;
+ const end=rp.target;
+ const pts=makeRevealPath(start,end);
+ if(!pts||pts.length<2)return;
+
+ const d=Math.hypot(start.x-end.x,start.y-end.y);
+ const initial=rp.initialDist||d||1;
+ const arrivalRadius = (rp.kind==="sanctuary" || (state.gate&&Math.hypot(end.x-state.gate.x,end.y-state.gate.y)<5)) ? 330 : 185;
+
+ // Fade quickly as the player approaches, and also fade near the end of the timer.
+ const distanceFade=clamp((d-arrivalRadius)/650,.08,.9);
+ const timeFade=clamp(rp.timer/1.1,.15,1);
+ const alpha=distanceFade*timeFade;
+ const lineWidth=3+2.5*clamp(d/initial,.2,1);
+
+ ctx.save();
+
+ ctx.globalAlpha=alpha*.38;
+ ctx.strokeStyle="#ffffff";
+ ctx.lineWidth=lineWidth+6;
+ ctx.shadowBlur=22;
+ ctx.shadowColor="#9bd8ff";
+ ctx.beginPath();
+ pts.forEach((p,i)=>{if(i===0)ctx.moveTo(p.x,p.y);else ctx.lineTo(p.x,p.y)});
+ ctx.stroke();
+
+ ctx.globalAlpha=alpha;
+ ctx.strokeStyle="#bfeeff";
+ ctx.lineWidth=lineWidth;
+ ctx.shadowBlur=16;
+ ctx.shadowColor="#bfeeff";
+ ctx.beginPath();
+ pts.forEach((p,i)=>{if(i===0)ctx.moveTo(p.x,p.y);else ctx.lineTo(p.x,p.y)});
+ ctx.stroke();
+
+ ctx.fillStyle="#eaf8ff";
+ for(let i=2;i<pts.length;i+=6){
+   let p=pts[i];
+   ctx.beginPath();ctx.arc(p.x,p.y,2.6,0,7);ctx.fill();
+ }
+
+ let g=ctx.createRadialGradient(end.x,end.y,0,end.x,end.y,70);
+ g.addColorStop(0,`rgba(210,245,255,${0.35*alpha})`);
+ g.addColorStop(1,"transparent");
+ ctx.fillStyle=g;
+ ctx.beginPath();ctx.arc(end.x,end.y,70,0,7);ctx.fill();
+
+ ctx.restore();
+}
+function triggerFlash(kind,duration,intensity){
+ if(!state)return;
+ state.flashKind=kind;
+ state.flashDuration=duration;
+ state.flashTimer=duration;
+ state.flash=intensity;
+}
+function shortFlash(v=.035){if(state)state.flash=Math.min(state.flash||0,v)}
+function radiance(){if(!state||state.mode!=="play"||state.paused||state.delivering)return;let cost=state.ownedArmor.includes("Shield of Faith")?85:100;if(state.faith<cost)return;state.faith-=cost;let range=state.ownedArmor.includes("Sword of the Spirit")?320:235;for(let i=state.shadows.length-1;i>=0;i--){let sh=state.shadows[i];if(dist(state.player,sh)<range){if(sh.kind==="corrupter"&&sh.resist>0&&!state.ownedArmor.includes("Sword of the Spirit")){sh.resist--;sh.speed*=.75;spark(sh.x,sh.y,35,"#b03cff");pop("Resisted",sh.x,sh.y,"#e1a8ff")}else{spark(sh.x,sh.y,45);state.shadows.splice(i,1)}}}state.player.hp=Math.min(state.player.maxHp,state.player.hp+20);playRadianceSFX();state.flash=.045;state.shake=0;spark(state.player.x,state.player.y,150);updateHUD()}
+function gameOver(){state.mode="over";screen("overlay")}
+function winRegion(){state.mode="shop";clearRevealPath();state.regionComplete=true;pendingFaith=Math.floor(state.faith);showFaithShop()}
+function showFaithShop(){screen("faithShop");updateShop()}
+function renderResultsBreakdown(){const s=state.stats,total=s.fading+s.comforted+s.blessed+s.wounded+s.lonely;return `<h3>Region Results</h3><div class="resultRow"><span>✧ Fading</span><b>${s.fading}</b></div><div class="resultRow"><span>✦ Comforted</span><b>${s.comforted}</b></div><div class="resultRow"><span>☀ Blessed</span><b>${s.blessed}</b></div><div class="resultRow"><span>◆ Wounded</span><b>${s.wounded}</b></div><div class="resultRow"><span>♡ Lonely</span><b>${s.lonely}</b></div><div class="resultRow resultTotal"><span>Total Souls Brought Home</span><b>${total}</b></div><br><div class="resultRow"><span>Rescue Faith</span><b>${Math.floor(s.baseFaith)}</b></div><div class="resultRow"><span>Delivery Faith</span><b>${Math.floor(s.deliveryFaith)}</b></div><div class="resultRow"><span>Maturity Bonuses</span><b>+${Math.floor(s.maturityBonus)}</b></div><div class="resultRow"><span>Lonely Bonuses</span><b>+${Math.floor(s.lonelyBonus)}</b></div><div class="resultRow"><span>Prayer/Flock Faith</span><b>${Math.floor(s.prayerFaith)}</b></div><div class="resultRow"><span>Faith Lost</span><b>-${Math.floor(s.faithLost)}</b></div><div class="resultRow resultTotal"><span>Available Faith</span><b>${pendingFaith}</b></div>`}
+function updateShop(){document.getElementById("shopFaith").textContent=pendingFaith;document.getElementById("resultsBreakdown").innerHTML=renderResultsBreakdown();let b=JSON.parse(localStorage.getItem("aolBlessings")||"{}");for(const [id,key] of [["buyRoad","road"],["buyBlessing","blessing"],["buyCall","call"]]){let btn=document.getElementById(id);if(b[key]){btn.textContent="Purchased";btn.classList.add("purchased");btn.disabled=true}else{btn.textContent="Buy";btn.classList.remove("purchased");btn.disabled=false}}}
+function buyShop(cost,key){let b=JSON.parse(localStorage.getItem("aolBlessings")||"{}");if(b[key])return;if(pendingFaith>=cost){pendingFaith-=cost;b[key]=true;localStorage.setItem("aolBlessings",JSON.stringify(b));sfx("click");updateShop()}}
+function finishShop(){const s=state.stats;campaignStats.fading+=s.fading;campaignStats.comforted+=s.comforted;campaignStats.blessed+=s.blessed;campaignStats.wounded+=s.wounded;campaignStats.lonely+=s.lonely;campaignStats.total+=s.fading+s.comforted+s.blessed+s.wounded+s.lonely;localStorage.setItem("aolCampaignStats",JSON.stringify(campaignStats));hope+=pendingFaith;localStorage.setItem("aolHope",hope);pendingFaith=0;if(regionIndex>=LEVELS.length-1){showHeaven();return}screen("sanctuary");document.getElementById("nextMission").textContent="Continue to "+LEVELS[regionIndex+1].short+": "+LEVELS[regionIndex+1].name;document.getElementById("sanctuaryHeader").textContent="Sanctuary: "+state.R.name+" Cleansed";document.getElementById("sanctuaryText").textContent=`${state.R.name} cleansed. Remaining Faith became Hope. Total Hope: ${Math.floor(hope)}.`}
+function showHeaven(){screen("heaven");document.getElementById("heavenStats").innerHTML=`<div class="resultRow"><span>✧ Fading Souls</span><b>${campaignStats.fading}</b></div><div class="resultRow"><span>✦ Comforted Souls</span><b>${campaignStats.comforted}</b></div><div class="resultRow"><span>☀ Blessed Souls</span><b>${campaignStats.blessed}</b></div><div class="resultRow"><span>◆ Wounded Souls</span><b>${campaignStats.wounded}</b></div><div class="resultRow"><span>♡ Lonely Souls</span><b>${campaignStats.lonely}</b></div><div class="resultRow resultTotal"><span>Total Souls Redeemed</span><b>${campaignStats.total}</b></div>`}
+
+function setObjLine(id,text,status){
+ const el=document.getElementById(id);
+ if(!el)return;
+ el.textContent=text;
+ el.classList.remove("done","current","locked");
+ if(status)el.classList.add(status);
+}
+function updateObjectives(){
+ if(!state)return;updateObjectives();
+ const chestDone=state.chest&&state.chest.open;
+ const soulsDone=state.delivered>=state.regionTarget;
+ const inSanctuary=insideGate(state.player);
+
+ setObjLine("objChest",`${chestDone?"✓":"☐"} Find Armor Chest`,chestDone?"done":"current");
+ setObjLine("objSouls",`${soulsDone?"✓":"☐"} Rescue Souls ${Math.min(state.delivered,state.regionTarget)} / ${state.regionTarget}`,soulsDone?"done":chestDone?"current":"locked");
+ setObjLine("objSanctuary",`${soulsDone&&inSanctuary?"✓":"☐"} Return to Sanctuary`,soulsDone?(inSanctuary?"done":"current"):"locked");
+}
+function updateHUD(){if(!state)return;document.getElementById("faithOrb").textContent=Math.floor(state.faith%100);document.getElementById("faithText").textContent=`Radiance Faith ${Math.floor(state.faith%100)} / 100`;document.getElementById("hopeText").textContent=`Hope ${Math.floor(hope)}`;let c0=state.followers.filter(f=>f.stage===0).length,c1=state.followers.filter(f=>f.stage===1).length,c2=state.followers.filter(f=>f.stage===2).length;document.getElementById("flockText").textContent=`Flock ${state.followers.length} ✧${c0} ✦${c1} ☀${c2}`;document.getElementById("counter").textContent=`${Math.min(state.delivered,state.regionTarget)} / ${state.regionTarget}`;document.getElementById("healthFill").style.width=Math.max(0,(state.player.hp/state.player.maxHp)*100)+"%";document.getElementById("miracle").classList.toggle("ready",state.faith>=(state.ownedArmor.includes("Shield of Faith")?85:100));const pb=document.getElementById("pathAbility");if(pb)pb.classList.toggle("ready",state.faith>=100);document.getElementById("armorText").textContent=state.ownedArmor.length?"Armor: "+state.ownedArmor.map(a=>a.split(" ")[0]).join(", "):"Armor: None";document.getElementById("bellText").textContent=state.bellRestored?"Bell: Restored":"Bell: Restore for +100 Faith + souls";document.getElementById("prayerText").textContent=insideGate(state.player)?"Safe Zone":state.player.praying?(activeLantern()?"Group Prayer x3":"Group Prayer x2"):"Prayer: Stand still";
+ const lt=document.getElementById("lanternText");
+ if(lt){
+   const nearLantern=activeLantern();
+   const blessed=!!(nearLantern&&state.player&&state.player.praying);
+   lt.textContent=blessed?"🕯️ Lantern Blessing Active: Faith x3":nearLantern?"🕯️ Lantern Ready: Stand still for x3":"Lantern: Pray nearby for x3 Faith";
+   lt.classList.toggle("ready",!!nearLantern&&!blessed);
+   lt.classList.toggle("blessed",!!blessed);
+ }document.getElementById("regionTitle").textContent=state.R.short;document.getElementById("areaName").textContent=insideGate(state.player)?"SANCTUARY SAFE ZONE":state.R.name.toUpperCase()}
+
+function draw(){ctx.clearRect(0,0,W,H);if(!state){drawMenuBackdrop();return}let sx=0,sy=0;ctx.save();ctx.translate(sx,sy);ctx.translate(-state.cam.x,-state.cam.y);drawBackground();drawSafeZone();drawLanterns();drawBell();drawChest();drawSavedStars();drawGate();drawRevealPath();for(const l of state.lights)drawLight(l.x,l.y,l.p);let all=[...state.souls.map(o=>({...o,type:"soul"})),...state.wounded.map(o=>({...o,type:"wounded"})),...state.followers.map(o=>({...o,type:"follow"})),...state.deliveredQueue.map(o=>({...o,type:"delivering"})),...state.shadows.map(o=>({...o,type:"shadow"})),{...state.player,type:"player"}].sort((a,b)=>a.y-b.y);for(const o of all){if(o.type==="soul")drawSoul(o.x,o.y,o.p,o.special,0);if(o.type==="wounded"){drawSoul(o.x,o.y,o.p,"wounded",0);if(o.heal>0)drawHeal(o.x,o.y,o.heal/1.55)}if(o.type==="follow"||o.type==="delivering")drawSoul(o.x,o.y,o.p,o.special,o.stage);if(o.type==="shadow")drawWraith(o.x,o.y,o);if(o.type==="player")drawPilgrim(o.x,o.y)}if(state.player.praying)drawPrayerCircle();for(const a of state.particles)drawParticle(a.x,a.y,a);ctx.restore();if(state.flash>0){ctx.globalAlpha=Math.min(state.flashKind==="radiance"?.50:.14,state.flash);ctx.fillStyle="#fff2a2";ctx.fillRect(0,0,W,H);ctx.globalAlpha=1}let vg=ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*.32,W/2,H/2,Math.max(W,H)*.78);vg.addColorStop(0,"rgba(0,0,0,0)");vg.addColorStop(1,"rgba(0,0,0,.62)");ctx.fillStyle=vg;ctx.fillRect(0,0,W,H);if(state.armorCelebrating&&state.chest&&state.chest.open){
+  const meta=ARMOR_META[(state.chest&&state.chest.item&&state.chest.item.name)||'']||{icon:"✨"};
+  ctx.save();
+  ctx.globalAlpha=.95;
+  ctx.font="42px Georgia";
+  ctx.textAlign="center";
+  ctx.shadowBlur=18;ctx.shadowColor="#ffe38e";
+  ctx.fillText(meta.icon,0,-72+Math.sin(state.t*5)*4);
+  ctx.restore();
+}ctx.restore()}
+function drawBackground(){const R=state.R,MAP=state.MAP,g=ctx.createLinearGradient(0,0,MAP.w,MAP.h);g.addColorStop(0,R.palette[0]);g.addColorStop(.45,R.palette[1]);g.addColorStop(1,R.palette[2]);ctx.fillStyle=g;ctx.fillRect(0,0,MAP.w,MAP.h);ctx.save();ctx.globalAlpha=.16;ctx.strokeStyle=R.kind==="farms"?"#7a5b31":R.kind==="heavens"?"#8ecbff":"#7d725d";for(let x=-MAP.h;x<MAP.w+MAP.h;x+=R.kind==="city"?90:56){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x-MAP.h,MAP.h);ctx.stroke()}for(let y=120;y<MAP.h;y+=R.kind==="farms"?95:140){ctx.beginPath();ctx.moveTo(0,y);ctx.bezierCurveTo(MAP.w*.3,y-60,MAP.w*.7,y+60,MAP.w,y-25);ctx.stroke()}ctx.restore();drawLandmarks(R.kind);ctx.globalAlpha=.11;ctx.fillStyle=R.fog;for(let i=0;i<16+regionIndex*2;i++){ctx.beginPath();ctx.ellipse((state.t*18+i*260)%(MAP.w+240)-120,140+i*115,220,28,0,0,7);ctx.fill()}ctx.globalAlpha=1}
+function drawLandmarks(kind){let MAP=state.MAP;ctx.fillStyle="rgba(0,0,0,.45)";if(kind==="forest"){for(let i=0;i<80;i++){let x=(i*173)%MAP.w,y=120+((i*251)%(MAP.h-200));ctx.fillRect(x-5,y-50,10,70);ctx.beginPath();ctx.arc(x,y-60,34,0,7);ctx.fill()}}else if(kind==="city"){for(let i=0;i<38;i++){let x=(i*191)%MAP.w,y=150+((i*263)%(MAP.h-260));ctx.fillRect(x,y,90,rand(80,170))}}else if(kind==="bones"){ctx.strokeStyle="rgba(235,220,180,.45)";for(let i=0;i<90;i++){let x=(i*131)%MAP.w,y=120+((i*211)%(MAP.h-160));ctx.beginPath();ctx.moveTo(x-12,y);ctx.lineTo(x+12,y);ctx.moveTo(x,y-12);ctx.lineTo(x,y+12);ctx.stroke()}}else if(kind==="marsh"){ctx.fillStyle="rgba(40,80,70,.28)";for(let i=0;i<28;i++){let x=(i*211)%MAP.w,y=150+((i*307)%(MAP.h-260));ctx.beginPath();ctx.ellipse(x,y,150,40,0,0,7);ctx.fill()}}else if(kind==="cathedral"||kind==="abbey"){for(let i=0;i<18;i++){let x=700+(i*210)%(MAP.w-900),y=200+((i*317)%(MAP.h-400));ctx.fillRect(x,y,120,180);ctx.beginPath();ctx.moveTo(x-20,y);ctx.lineTo(x+60,y-80);ctx.lineTo(x+140,y);ctx.fill()}}else if(kind==="heavens"){for(let i=0;i<22;i++){let x=650+(i*263)%(MAP.w-800),y=160+((i*337)%(MAP.h-350));let gl=ctx.createRadialGradient(x,y,0,x,y,120);gl.addColorStop(0,"rgba(120,190,255,.25)");gl.addColorStop(1,"transparent");ctx.fillStyle=gl;ctx.beginPath();ctx.arc(x,y,120,0,7);ctx.fill()}}else if(kind==="night"){for(let i=0;i<30;i++){let x=700+(i*231)%(MAP.w-900),y=170+((i*311)%(MAP.h-360));ctx.fillStyle="rgba(0,0,0,.75)";ctx.beginPath();ctx.arc(x,y,80,0,7);ctx.fill()}}else{for(let i=0;i<28;i++){let x=(i*197)%MAP.w,y=140+((i*313)%(MAP.h-260));ctx.fillRect(x,y,80,78);ctx.beginPath();ctx.moveTo(x-8,y);ctx.lineTo(x+40,y-42);ctx.lineTo(x+88,y);ctx.fill()}}if(false){for(let i=0;i<6;i++)drawLantern(500+i*420,MAP.h-420-i*190)}}
+function drawLanterns(){
+ if(!state||!state.lanterns)return;
+ for(const l of state.lanterns){
+   const active=state.player&&dist(state.player,l)<((l.r||135)+35);
+   drawLantern(l.x,l.y,active,l.r);
+ }
+}
+function drawLantern(x,y,active=false,r=76){
+ if(!isFinite(x)||!isFinite(y))return;
+ const kind=(state&&state.R&&state.R.kind)||"village";
+ ctx.save();
+
+ // Region-specific base.
+ ctx.strokeStyle=kind==="cathedral"||kind==="abbey"?"#5a526f":kind==="forest"?"#2f2415":kind==="city"?"#42332b":"#382716";
+ ctx.fillStyle=kind==="cathedral"||kind==="abbey"?"rgba(150,140,190,.7)":kind==="forest"?"rgba(73,54,30,.7)":kind==="city"?"rgba(75,60,50,.7)":"rgba(90,58,24,.75)";
+ ctx.lineWidth=4;
+
+ if(kind==="abbey"||kind==="cathedral"){
+   ctx.fillRect(x-18,y+36,36,18);
+   ctx.beginPath();ctx.moveTo(x,y+36);ctx.lineTo(x,y-4);ctx.stroke();
+   ctx.beginPath();ctx.arc(x,y-10,18,Math.PI,0);ctx.stroke();
+ }else if(kind==="forest"||kind==="marsh"){
+   ctx.beginPath();ctx.moveTo(x,y+66);ctx.lineTo(x-10,y+20);ctx.lineTo(x+6,y-4);ctx.lineTo(x+12,y+66);ctx.closePath();ctx.fill();
+ }else{
+   ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y+70);ctx.stroke();
+ }
+
+ const glowRadius=active?r+85:82;
+ let glow=ctx.createRadialGradient(x,y+18,0,x,y+18,glowRadius);
+ glow.addColorStop(0,active?"rgba(255,184,70,.76)":"rgba(255,156,48,.42)");
+ glow.addColorStop(.45,active?"rgba(255,145,35,.26)":"rgba(255,156,48,.12)");
+ glow.addColorStop(1,"transparent");
+ ctx.fillStyle=glow;
+ ctx.beginPath();ctx.arc(x,y+18,glowRadius,0,7);ctx.fill();
+
+ ctx.fillStyle=active?"#ffd07a":"#f7a64a";
+ ctx.fillRect(x-8,y+10,16,18);
+ ctx.fillStyle=active?"#fff1bf":"#f7c073";
+ ctx.beginPath();
+ ctx.ellipse(x,y+8,7+Math.sin(state.t*8)*2,13+Math.sin(state.t*6)*2,0,0,7);
+ ctx.fill();
+
+ if(active){
+   ctx.fillStyle="#ffcf73";
+   for(let i=0;i<7;i++){
+     const a=state.t*2+i*1.1;
+     ctx.globalAlpha=.65;
+     ctx.beginPath();
+     ctx.arc(x+Math.cos(a)*22,y-18-((state.t*32+i*17)%64),2.1,0,7);
+     ctx.fill();
+   }
+   ctx.globalAlpha=1;
+   ctx.fillStyle="#fff1bf";
+   ctx.font="900 12px Georgia";
+   ctx.textAlign="center";
+   ctx.fillText(state.player&&state.player.praying?"🕯️ Faith x3":"🕯️ Pray Here",x,y+95);
+ }
+ ctx.restore();
+}
+function drawSafeZone(){let g=ctx.createRadialGradient(state.gate.x,state.gate.y,0,state.gate.x,state.gate.y,380);g.addColorStop(0,"rgba(255,233,150,.14)");g.addColorStop(.55,"rgba(255,216,88,.045)");g.addColorStop(1,"transparent");ctx.fillStyle=g;ctx.beginPath();ctx.arc(state.gate.x,state.gate.y,380,0,7);ctx.fill()}
+function drawGate(){let x=state.gate.x,y=state.gate.y,glow=ctx.createRadialGradient(x,y,0,x,y,190);glow.addColorStop(0,"rgba(255,246,195,.92)");glow.addColorStop(.35,"rgba(245,178,66,.32)");glow.addColorStop(1,"transparent");ctx.fillStyle=glow;ctx.beginPath();ctx.arc(x,y,190,0,7);ctx.fill();ctx.strokeStyle="#dbb86b";ctx.lineWidth=9;ctx.beginPath();ctx.arc(x,y,72,Math.PI,0);ctx.stroke();ctx.fillStyle="#f0c66e";ctx.font="900 20px Georgia";ctx.textAlign="center";ctx.fillText("SANCTUARY",x,y+128)}
+function drawBell(){let b=state.bell,glow=ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,b.r+(state.bellRestored?150:80));glow.addColorStop(0,state.bellRestored?"rgba(255,230,130,.45)":"rgba(120,130,180,.18)");glow.addColorStop(1,"transparent");ctx.fillStyle=glow;ctx.beginPath();ctx.arc(b.x,b.y,b.r+(state.bellRestored?150:80),0,7);ctx.fill();ctx.strokeStyle=state.bellRestored?"#f0c66e":"#777b9e";ctx.lineWidth=6;ctx.strokeRect(b.x-35,b.y-75,70,105);ctx.beginPath();ctx.moveTo(b.x-55,b.y-75);ctx.lineTo(b.x,b.y-130);ctx.lineTo(b.x+55,b.y-75);ctx.stroke();ctx.fillStyle=state.bellRestored?"#f0c66e":"#8e91aa";ctx.beginPath();ctx.arc(b.x,b.y-35,18,Math.PI,0);ctx.fill()}
+const ARMOR_META={
+ "Shoes of Peace":{icon:"👟",quote:"Carry hope where darkness dwells.",bonus:"+10% Pilgrim speed and +15% follower speed."},
+ "Shield of Faith":{icon:"🛡️",quote:"Stand firm against the storm.",bonus:"Radiance costs less Faith."},
+ "Breastplate of Righteousness":{icon:"✚",quote:"A heart that refuses corruption.",bonus:"+25 maximum health."},
+ "Belt of Truth":{icon:"◉",quote:"The foundation that holds all together.",bonus:"Hidden guidance becomes easier to follow."},
+ "Helmet of Salvation":{icon:"⛑️",quote:"Protects the mind against despair.",bonus:"Darkness is drawn less strongly during prayer."},
+ "Sword of the Spirit":{icon:"⚔️",quote:"Light itself becomes your weapon.",bonus:"Radiance reaches farther."}
+};
+function armorSigil(name){
+ const sigils={
+  "Shoes of Peace":"<svg viewBox='0 0 100 100'><circle cx='50' cy='50' r='42' stroke='#f0c66e' fill='none' stroke-width='4'/><path d='M50 18 C42 34 27 37 18 33 C25 49 39 49 50 40 C61 49 75 49 82 33 C73 37 58 34 50 18 Z' stroke='#f0c66e' fill='none' stroke-width='4'/></svg>",
+  "Shield of Faith":"<svg viewBox='0 0 100 100'><path d='M50 10 L82 22 V47 C82 69 66 84 50 92 C34 84 18 69 18 47 V22 Z' stroke='#f0c66e' fill='none' stroke-width='4'/><path d='M50 26 V70 M34 43 H66' stroke='#fff1bf' fill='none' stroke-width='4'/></svg>",
+  "Breastplate of Righteousness":"<svg viewBox='0 0 100 100'><path d='M30 16 H70 L80 42 L72 84 H28 L20 42 Z' stroke='#f0c66e' fill='none' stroke-width='4'/></svg>",
+  "Belt of Truth":"<svg viewBox='0 0 100 100'><rect x='14' y='40' width='72' height='20' stroke='#f0c66e' fill='none' stroke-width='4'/></svg>",
+  "Helmet of Salvation":"<svg viewBox='0 0 100 100'><circle cx='50' cy='42' r='32' stroke='#fff1bf' fill='none' stroke-width='3'/><path d='M24 52 C25 26 75 26 76 52 L68 78 H32 Z' stroke='#f0c66e' fill='none' stroke-width='4'/></svg>",
+  "Sword of the Spirit":"<svg viewBox='0 0 100 100'><path d='M50 6 L58 25 L54 66 H46 L42 25 Z' stroke='#f0c66e' fill='none' stroke-width='4'/><path d='M27 66 H73' stroke='#fff1bf' stroke-width='4'/></svg>"
+ };
+ return sigils[name] || "";
+}
+
+function showArmorCelebration(item){ if(typeof playArmorFoundSFX==="function")playArmorFoundSFX();
+ if(typeof clearRevealPath==="function")clearRevealPath();
+ if(!state)return;
+ const meta=ARMOR_META[item]||{icon:"✨",quote:"Light strengthens the faithful.",bonus:"Permanent blessing unlocked."};
+ state.armorCelebrating=true;
+ state.paused=true;
+ const el=document.getElementById("armorCelebration");
+ if(!el)return;
+ document.getElementById("armorCelebrationIcon").innerHTML = armorSigil(item);
+ document.getElementById("armorCelebrationName").textContent=item;
+ document.getElementById("armorCelebrationQuote").textContent='"'+meta.quote+'"';
+ document.getElementById("armorCelebrationBonus").textContent=meta.bonus;
+ document.getElementById("armorCelebrationCollected").textContent=`Collected ${state.ownedArmor.length} / ${ARMOR.length}`;
+ el.style.display="flex";
+ sfx("bell");
+}
+function hideArmorCelebration(){
+ const celebr=document.getElementById("armorCelebration");
+ const p=document.getElementById("armorPopup");
+ const b=document.getElementById("armorBackdrop");
+ if(celebr)celebr.style.display="none";
+ if(p){p.style.display="none";p.classList.remove("show");}
+ if(b)b.style.display="none";
+ if(state){state.armorCelebrating=false;state.paused=false;}
+}
+function drawChest(){let c=state.chest,x=state.chest.x,y=state.chest.y,g=ctx.createRadialGradient(x,y,0,x,y,state.ownedArmor.includes("Belt of Truth")?150:95);g.addColorStop(0,state.chest.open?"rgba(255,224,122,.34)":"rgba(255,196,70,.22)");g.addColorStop(1,"transparent");ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,state.ownedArmor.includes("Belt of Truth")?150:95,0,7);ctx.fill();ctx.save();ctx.translate(x,y);ctx.fillStyle=state.chest.open?"#8f6b2a":"#4a2a13";ctx.fillRect(-34,-18,68,36);ctx.fillStyle=state.chest.open?"#d7a94a":"#7a431d";ctx.fillRect(-38,-30,76,22);ctx.strokeStyle="#f0c66e";ctx.lineWidth=3;ctx.strokeRect(-38,-30,76,58);if(!state.chest.open){ctx.strokeStyle="#ffe38e";ctx.lineWidth=4;ctx.beginPath();ctx.arc(0,0,55,-Math.PI/2,-Math.PI/2+Math.PI*2*(state.chest.progress/3));ctx.stroke()}ctx.restore()}
+function drawSavedStars(){for(const s of state.savedStars){ctx.save();ctx.globalAlpha=.82+Math.sin(state.t*2+s.p)*.18;ctx.fillStyle=s.kind===2?"#ffd04b":"#fff1bf";ctx.shadowBlur=14;ctx.shadowColor=ctx.fillStyle;ctx.beginPath();ctx.arc(s.x,s.y,2.5+Math.sin(state.t*3+s.p),0,7);ctx.fill();ctx.restore()}}
+function drawLight(x,y,p){ctx.shadowBlur=16;ctx.shadowColor="#ffe18b";ctx.fillStyle="#ffe18b";ctx.beginPath();ctx.arc(x,y,4+Math.sin(state.t*4+p)*1.5,0,7);ctx.fill();ctx.shadowBlur=0}
+function baseAura(x,y,p,color,outer,size=38){ctx.save();ctx.translate(x,y+Math.sin(state.t*2+p)*3);ctx.shadowBlur=24;ctx.shadowColor=color;let pulse=1+Math.sin(state.t*3+p)*.08,a=ctx.createRadialGradient(0,0,0,0,0,size*pulse);a.addColorStop(0,"rgba(255,255,245,.82)");a.addColorStop(.28,outer);a.addColorStop(1,"transparent");ctx.fillStyle=a;ctx.beginPath();ctx.arc(0,0,size*pulse,0,7);ctx.fill()}
+function starPath(r1,r2,points){ctx.beginPath();for(let i=0;i<points*2;i++){let r=i%2?r2:r1,a=-Math.PI/2+i*Math.PI/points,x=Math.cos(a)*r,y=Math.sin(a)*r;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.closePath()}
+function drawSoul(x,y,p,type,stage=0){if(stage===2)return drawBlessed(x,y,p);if(stage===1)return drawComforted(x,y,p);if(type==="wounded")return drawWoundedSoul(x,y,p);if(type==="lonely")return drawLonelySoul(x,y,p);return drawFading(x,y,p)}
+function drawFading(x,y,p){baseAura(x,y,p,"#9ec7ff","rgba(120,175,255,.26)",34);ctx.fillStyle="#dbe8ff";ctx.scale(.9,.9);starPath(15,7,5);ctx.fill();ctx.restore()}
+function drawComforted(x,y,p){baseAura(x,y,p,"#fff0a8","rgba(255,220,95,.32)",39);ctx.strokeStyle="#fff0a8";ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,17,0,7);ctx.stroke();ctx.fillStyle="#fff7d0";ctx.beginPath();ctx.arc(0,0,10,0,7);ctx.fill();ctx.restore()}
+function drawBlessed(x,y,p){baseAura(x,y,p,"#ffd04b","rgba(255,177,32,.42)",46);ctx.strokeStyle="#ffd04b";ctx.lineWidth=2;for(let i=0;i<12;i++){let a=state.t*.8+p+i*Math.PI*2/12;ctx.beginPath();ctx.moveTo(Math.cos(a)*18,Math.sin(a)*18);ctx.lineTo(Math.cos(a)*28,Math.sin(a)*28);ctx.stroke()}ctx.fillStyle="#fff4ad";ctx.beginPath();ctx.arc(0,0,14.5,0,7);ctx.fill();ctx.restore()}
+function drawWoundedSoul(x,y,p){baseAura(x,y,p,"#caa0ff","rgba(178,121,255,.34)",38);ctx.save();ctx.rotate(Math.PI/4);ctx.fillStyle="#caa0ff";ctx.fillRect(-13,-13,26,26);ctx.restore();ctx.restore()}
+function drawLonelySoul(x,y,p){baseAura(x,y,p,"#ffc7f7","rgba(255,110,220,.30)",46);ctx.fillStyle="#ffc7f7";ctx.beginPath();ctx.arc(0,0,13,0,7);ctx.fill();ctx.strokeStyle="rgba(255,255,255,.72)";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,-18);ctx.bezierCurveTo(18,-35,38,-8,0,24);ctx.bezierCurveTo(-38,-8,-18,-35,0,-18);ctx.stroke();ctx.restore()}
+function drawHeal(x,y,pct){ctx.strokeStyle="#ffe38e";ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y,38,-Math.PI/2,-Math.PI/2+Math.PI*2*pct);ctx.stroke()}
+function drawWraith(x,y,sh){for(const s of sh.smoke){ctx.globalAlpha=s.life*(sh.kind==="corrupter"?.18:.12);ctx.fillStyle=sh.kind==="corrupter"?"#210024":"#09090c";ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,7);ctx.fill()}ctx.globalAlpha=1;ctx.save();ctx.translate(x,y);ctx.shadowBlur=sh.kind==="corrupter"?34:24;ctx.shadowColor=sh.kind==="corrupter"?"#8e1dff":"#48000e";let b=ctx.createRadialGradient(0,-8,0,0,0,sh.kind==="corrupter"?38:31);b.addColorStop(0,sh.kind==="corrupter"?"rgba(54,16,72,.96)":"rgba(30,28,32,.95)");b.addColorStop(.7,"rgba(0,0,0,.88)");b.addColorStop(1,"transparent");ctx.fillStyle=b;ctx.beginPath();ctx.moveTo(0,-34);ctx.bezierCurveTo(-28,-18,-28,29,-11,46);ctx.quadraticCurveTo(0,32,11,46);ctx.bezierCurveTo(28,22,27,-18,0,-34);ctx.fill();ctx.fillStyle=sh.kind==="corrupter"?"#d06cff":"#ff173a";ctx.beginPath();ctx.arc(-5,-15,2.8,0,7);ctx.arc(6,-15,2.8,0,7);ctx.fill();ctx.restore()}
+function drawHolySword(){
+ ctx.save();
+ // Carry angle: sacred longsword, angled forward.
+ ctx.rotate(-0.72);
+ ctx.translate(16,-8);
+
+ // Soft glow
+ ctx.shadowBlur=14;
+ ctx.shadowColor="#dfeeff";
+
+ // Blade
+ let blade=ctx.createLinearGradient(0,-54,0,18);
+ blade.addColorStop(0,"#ffffff");
+ blade.addColorStop(.45,"#dfeeff");
+ blade.addColorStop(1,"#9fb7d7");
+ ctx.fillStyle=blade;
+ ctx.strokeStyle="#ffffff";
+ ctx.lineWidth=1.5;
+ ctx.beginPath();
+ ctx.moveTo(0,-62);
+ ctx.lineTo(8,-38);
+ ctx.lineTo(5,16);
+ ctx.lineTo(-5,16);
+ ctx.lineTo(-8,-38);
+ ctx.closePath();
+ ctx.fill();
+ ctx.stroke();
+
+ // Central ridge
+ ctx.strokeStyle="rgba(255,255,255,.72)";
+ ctx.lineWidth=1;
+ ctx.beginPath();
+ ctx.moveTo(0,-54);
+ ctx.lineTo(0,16);
+ ctx.stroke();
+
+ // Gold crossguard
+ ctx.shadowBlur=10;
+ ctx.shadowColor="#ffe38e";
+ ctx.strokeStyle="#f0c66e";
+ ctx.lineWidth=5;
+ ctx.lineCap="round";
+ ctx.beginPath();
+ ctx.moveTo(-22,18);
+ ctx.lineTo(22,18);
+ ctx.stroke();
+
+ // Grip
+ ctx.shadowBlur=0;
+ ctx.strokeStyle="#6b3f22";
+ ctx.lineWidth=7;
+ ctx.beginPath();
+ ctx.moveTo(0,20);
+ ctx.lineTo(0,48);
+ ctx.stroke();
+
+ // Pommel
+ ctx.fillStyle="#f0c66e";
+ ctx.strokeStyle="#fff1bf";
+ ctx.lineWidth=1.5;
+ ctx.beginPath();
+ ctx.arc(0,54,6,0,7);
+ ctx.fill();
+ ctx.stroke();
+
+ ctx.restore();
+}
+function drawPilgrim(x,y){ctx.save();ctx.translate(x,y);let owned=state.ownedArmor,hasSword=owned.includes("Sword of the Spirit"),hasShield=owned.includes("Shield of Faith"),hasBreast=owned.includes("Breastplate of Righteousness"),hasShoes=owned.includes("Shoes of Peace"),hasHelmet=owned.includes("Helmet of Salvation");let aura=ctx.createRadialGradient(0,0,0,0,0,70);aura.addColorStop(0,"rgba(255,238,168,.58)");aura.addColorStop(1,"transparent");ctx.fillStyle=aura;ctx.beginPath();ctx.arc(0,0,70,0,7);ctx.fill();ctx.shadowBlur=20;ctx.shadowColor="#ffe18b";ctx.fillStyle=hasBreast?"#f1d68a":"#d9d7d0";ctx.beginPath();ctx.ellipse(0,-18,12.5,16,0,0,7);ctx.fill();ctx.beginPath();ctx.moveTo(0,-31);ctx.lineTo(-22,30);ctx.quadraticCurveTo(0,42,22,30);ctx.closePath();ctx.fill();if(hasBreast){
+  ctx.shadowBlur=8;ctx.shadowColor="#ffe38e";
+  ctx.strokeStyle="#f0c66e";ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(-10,-25);ctx.lineTo(-14,3);ctx.quadraticCurveTo(0,17,14,3);ctx.lineTo(10,-25);
+  ctx.stroke();
+  ctx.fillStyle="rgba(255,224,130,.16)";
+  ctx.beginPath();
+  ctx.moveTo(-9,-24);ctx.lineTo(-12,2);ctx.quadraticCurveTo(0,12,12,2);ctx.lineTo(9,-24);
+  ctx.closePath();ctx.fill();
+  ctx.shadowBlur=0;
+}
+ctx.fillStyle="#1f2430";ctx.beginPath();ctx.arc(0,-20,7,0,7);ctx.fill();
+if(hasHelmet){
+  ctx.shadowBlur=18;ctx.shadowColor="#ffe38e";
+  ctx.fillStyle="#f6d976";
+  ctx.beginPath();
+  ctx.arc(0,-26,16,Math.PI*.96,Math.PI*2.04);
+  ctx.lineTo(13,-16);
+  ctx.quadraticCurveTo(0,-9,-13,-16);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle="#fff1bf";ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(0,-26,16,Math.PI*.96,Math.PI*2.04);ctx.stroke();
+
+  // Small crest and face guard so it reads as a helmet.
+  ctx.fillStyle="#fff6c8";
+  ctx.beginPath();ctx.moveTo(0,-45);ctx.lineTo(5,-34);ctx.lineTo(-5,-34);ctx.closePath();ctx.fill();
+  ctx.strokeStyle="#caa04d";ctx.lineWidth=1.6;
+  ctx.beginPath();ctx.moveTo(0,-33);ctx.lineTo(0,-15);ctx.stroke();
+  ctx.shadowBlur=0;
+}
+if(hasShoes){
+  ctx.shadowBlur=10;ctx.shadowColor="#ffe38e";
+  ctx.fillStyle="#ffe38e";
+  ctx.beginPath();ctx.arc(-8,36,4.8,0,7);ctx.arc(8,36,4.8,0,7);ctx.fill();
+  ctx.globalAlpha=.38;ctx.beginPath();ctx.ellipse(0,40,22,6,0,0,7);ctx.fill();ctx.globalAlpha=1;ctx.shadowBlur=0;
+}
+if(hasSword){
+  ctx.save();
+  ctx.translate(17,2);
+  ctx.rotate(-0.72);
+  ctx.scale(.62,.62);
+  ctx.shadowBlur=12;
+  ctx.shadowColor="#dfeeff";
+
+  // Balanced holy longsword: readable, not anime-sized.
+  let blade=ctx.createLinearGradient(0,-64,0,16);
+  blade.addColorStop(0,"#ffffff");
+  blade.addColorStop(.5,"#dfeeff");
+  blade.addColorStop(1,"#8fa9cc");
+  ctx.fillStyle=blade;
+  ctx.strokeStyle="#ffffff";
+  ctx.lineWidth=1.5;
+  ctx.beginPath();
+  ctx.moveTo(0,-70);
+  ctx.lineTo(8,-42);
+  ctx.lineTo(5,16);
+  ctx.lineTo(-5,16);
+  ctx.lineTo(-8,-42);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+
+  ctx.strokeStyle="rgba(255,255,255,.75)";
+  ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(0,-58);ctx.lineTo(0,16);ctx.stroke();
+
+  ctx.shadowBlur=10;ctx.shadowColor="#ffe38e";
+  ctx.strokeStyle="#f0c66e";ctx.lineWidth=5;ctx.lineCap="round";
+  ctx.beginPath();ctx.moveTo(-23,18);ctx.lineTo(23,18);ctx.stroke();
+
+  ctx.shadowBlur=0;
+  ctx.strokeStyle="#6b3f22";ctx.lineWidth=7;
+  ctx.beginPath();ctx.moveTo(0,22);ctx.lineTo(0,48);ctx.stroke();
+
+  ctx.fillStyle="#f0c66e";ctx.strokeStyle="#fff1bf";ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(0,55,6,0,7);ctx.fill();ctx.stroke();
+  ctx.restore();
+}else{
+  ctx.strokeStyle="#ffe18b";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(20,-10);ctx.lineTo(32,-38);ctx.stroke();ctx.fillStyle="#fff5b5";ctx.beginPath();ctx.arc(34,-41,5,0,7);ctx.fill()
+}if(hasShield){
+  ctx.shadowBlur=10;ctx.shadowColor="#ffe38e";
+  ctx.strokeStyle="#f0c66e";ctx.fillStyle="rgba(255,227,137,.22)";ctx.lineWidth=3;
+  ctx.beginPath();
+  ctx.moveTo(-24,-14);
+  ctx.quadraticCurveTo(-48,-2,-34,30);
+  ctx.quadraticCurveTo(-18,18,-24,-14);
+  ctx.fill();ctx.stroke();
+  ctx.strokeStyle="#fff1bf";ctx.lineWidth=1.4;
+  ctx.beginPath();ctx.moveTo(-31,-6);ctx.lineTo(-31,20);ctx.moveTo(-39,6);ctx.lineTo(-23,6);ctx.stroke();
+  ctx.shadowBlur=0;
+}ctx.restore()}
+function drawRadianceRing(){
+ if(!state||!state.player||!state.radianceRing)return;
+ const life=state.radianceRing;
+ const progress=1-life/.28;
+ const r=65+progress*185;
+ ctx.save();
+ ctx.globalAlpha=Math.max(0,life/.45)*.36;
+ ctx.strokeStyle="#fff1bf";
+ ctx.shadowBlur=18;
+ ctx.shadowColor="#ffe38e";
+ ctx.lineWidth=4;
+ ctx.beginPath();
+ ctx.arc(state.player.x,state.player.y,r,0,7);
+ ctx.stroke();
+ ctx.restore();
+}
+function drawPrayerCircle(){let p=state.player,pulse=88+Math.sin(state.t*4)*9,g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,pulse+55);g.addColorStop(0,"rgba(255,235,150,.18)");g.addColorStop(1,"transparent");ctx.fillStyle=g;ctx.beginPath();ctx.arc(p.x,p.y,pulse+55,0,7);ctx.fill();ctx.strokeStyle="#ffe38e";ctx.lineWidth=3;ctx.beginPath();ctx.arc(p.x,p.y,pulse,0,7);ctx.stroke();for(const f of state.followers){ctx.globalAlpha=.22;ctx.strokeStyle=f.stage===2?"#ffd04b":"#fff1bf";ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(f.x,f.y);ctx.stroke();ctx.globalAlpha=1}}
+function drawParticle(x,y,a){ctx.globalAlpha=Math.max(0,a.life);if(a.text){ctx.fillStyle=a.color;ctx.font="900 16px Georgia";ctx.textAlign="center";ctx.fillText(a.text,x,y)}else{ctx.fillStyle=a.color;ctx.beginPath();ctx.arc(x,y,a.r||3,0,7);ctx.fill()}ctx.globalAlpha=1}
+function drawMenuBackdrop(){let g=ctx.createRadialGradient(W*.65,H*.1,0,W/2,H*.45,Math.max(W,H));g.addColorStop(0,"#1a2342");g.addColorStop(.52,"#070b14");g.addColorStop(1,"#010207");ctx.fillStyle=g;ctx.fillRect(0,0,W,H);let gx=W/2,gy=H*.72;let glow=ctx.createRadialGradient(gx,gy,0,gx,gy,210);glow.addColorStop(0,"rgba(255,235,140,.28)");glow.addColorStop(1,"transparent");ctx.fillStyle=glow;ctx.beginPath();ctx.arc(gx,gy,210,0,7);ctx.fill();for(let i=0;i<42;i++){let a=i*.9+Date.now()/2200,r=70+(i%12)*10;ctx.fillStyle=i%3===0?"#ffd04b":i%3===1?"#dbe8ff":"#ffc7f7";ctx.shadowBlur=18;ctx.shadowColor=ctx.fillStyle;ctx.beginPath();ctx.arc(gx+Math.cos(a)*r,gy+Math.sin(a)*r*.45,3+(i%4),0,7);ctx.fill()}ctx.shadowBlur=0}
+function loop(t){
+ let dt=Math.min(.033,(t-last)/1000||0);last=t;
+ try{update(dt);draw();}
+ catch(err){
+   if(!window.__lastRuntimeGuardLog||performance.now()-window.__lastRuntimeGuardLog>1500){window.__lastRuntimeGuardLog=performance.now();console.error("Armor of Light runtime guard:",err);}
+   if(state&&state.player){state.delivering=false;state.paused=false;pop("Light steadies you...",state.player.x,state.player.y,"#fff1bf");}
+ }
+ requestAnimationFrame(loop)
+}
+
+addEventListener("pointerdown",e=>{if(window.aolAbilityTapGuardUntil&&performance.now()<window.aolAbilityTapGuardUntil)return;
+ if(!state||state.mode!=="play")return;
+ if(e.target&&e.target.closest&&e.target.closest("button,select,.screen,#miracle,#pathAbility,#pauseBtn"))return;
+ if(e.clientX>W*.52)return;
+ joy.active=true;joy.baseX=e.clientX;joy.baseY=e.clientY;
+ const j=document.getElementById("joystick");
+ const uiScale=parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--ui-scale"))||1;
+ const base=96*uiScale;
+ j.style.opacity="1";
+ j.style.left=(e.clientX-base/2)+"px";
+ j.style.top=(e.clientY-base/2)+"px";
+ j.style.bottom="auto";
+ moveJoy(e);
+});
+addEventListener("pointermove",e=>{if(joy.active)moveJoy(e);});
+addEventListener("pointerup",()=>resetJoy());
+addEventListener("pointercancel",()=>resetJoy());
+
+function resetJoy(){
+ joy.active=false;joy.x=0;joy.y=0;
+ const j=document.getElementById("joystick"); if(j)j.style.opacity="0";
+ const dot=document.getElementById("joyDot"); if(dot){dot.style.left="31px";dot.style.top="31px";}
+}
+function moveJoy(e){
+ const uiScale=parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--ui-scale"))||1;
+ const dx=e.clientX-joy.baseX, dy=e.clientY-joy.baseY;
+ const raw=Math.hypot(dx,dy);
+ const max=38*uiScale;
+ const d=Math.min(max,raw);
+ const a=Math.atan2(dy,dx);
+ const dot=document.getElementById("joyDot");
+ dot.style.left=(31)+(Math.cos(a)*d/uiScale)+"px";
+ dot.style.top=(31)+(Math.sin(a)*d/uiScale)+"px";
+ const dead=.12;
+ let mag=Math.min(1,raw/max);
+ if(mag<dead){joy.x=0;joy.y=0;return;}
+ joy.x=Math.cos(a)*mag;
+ joy.y=Math.sin(a)*mag;
+}
+document.getElementById("pathAbility").onclick=e=>{e.preventDefault();revealPathAbility()};
+document.getElementById("pauseBtn").onclick=e=>{e.preventDefault();sfx("click");showPauseMenu()};
+document.getElementById("resumeGame").onclick=e=>{e.preventDefault();sfx("click");closePauseMenu()};
+document.getElementById("restartLevel").onclick=e=>{e.preventDefault();sfx("click");document.getElementById("pauseMenu").style.display="none";newGame(false)};
+document.getElementById("returnTitle").onclick=e=>{e.preventDefault();sfx("click");document.getElementById("pauseMenu").style.display="none";if(state&&!state.armorCelebrating)state.paused=false;showMenu()};
+document.getElementById("playPauseSelectedLevel").onclick=e=>{
+ e.preventDefault();sfx("click");
+ const sel=document.getElementById("pauseLevelSelect");
+ regionIndex=Number(sel.value||0);
+ localStorage.setItem("aolRegion",regionIndex);
+ document.getElementById("pauseMenu").style.display="none";
+ newGame(false);
+};
+
+{
+ const btn=document.getElementById("pauseSoundToggle");
+ if(btn)btn.onclick=e=>{e.preventDefault();soundOn=!soundOn;localStorage.setItem("aolSound",soundOn?"1":"0");updateSoundButton();updatePauseSoundButton();if(soundOn){initAudio();sfx("click")}};
+}
+
+
+document.getElementById("armorContinueBtn").onclick=e=>{e.preventDefault();sfx("click");hideArmorCelebration()};
+document.getElementById("miracle").onclick=radiance;
+document.getElementById("armorContinue").onclick=e=>{e.preventDefault();sfx("click");hideArmorPopup();if(state)state.paused=false};
+document.getElementById("restart").onclick=e=>{e.preventDefault();sfx("click");newGame(false)};
+document.getElementById("nextMission").onclick=e=>{e.preventDefault();sfx("click");newGame(true)};
+document.getElementById("startGame").onclick=e=>{
+ e.preventDefault();sfx("click");
+ for(const k of ["aolHope","aolRegion","aolArmor","aolBlessings","aolCampaignStats"])localStorage.removeItem(k);
+ hope=0;regionIndex=0;campaignStats={fading:0,comforted:0,blessed:0,wounded:0,lonely:0,total:0};
+ localStorage.setItem("aolRegion",regionIndex);
+ screen("tutorial");
+};
+document.getElementById("continueGame").onclick=e=>{e.preventDefault();sfx("click");regionIndex=Number(localStorage.getItem("aolRegion")||0);newGame(false)};
+document.getElementById("beginAfterTutorial").onclick=e=>{
+ e.preventDefault();sfx("click");
+ regionIndex=0;
+ localStorage.setItem("aolRegion",0);
+ newGame(false);
+};
+
+{
+ const btn=document.getElementById("soundToggle");
+ if(btn)btn.onclick=e=>{e.preventDefault();soundOn=!soundOn;localStorage.setItem("aolSound",soundOn?"1":"0");updateSoundButton();if(soundOn){initAudio();sfx("click")}};
+}
+
+document.getElementById("buyRoad").onclick=e=>{e.preventDefault();buyShop(1000,"road")};
+document.getElementById("buyBlessing").onclick=e=>{e.preventDefault();buyShop(1250,"blessing")};
+document.getElementById("buyCall").onclick=e=>{e.preventDefault();buyShop(1500,"call")};
+document.getElementById("finishShop").onclick=e=>{e.preventDefault();finishShop()};
+document.getElementById("heavenButton").onclick=e=>{e.preventDefault();sfx("click");showMenu()};
+document.addEventListener("contextmenu", e => e.preventDefault());
+document.addEventListener("selectstart", e => e.preventDefault());
+document.addEventListener("gesturestart", e => e.preventDefault());
+updateSoundButton();showMenu();requestAnimationFrame(loop);
+</script>
+
+
+
+
+
+
+
+
+<script>
+/* === Release Candidate Audio Controller === */
+(function(){
+  let currentMusic = null;
+  let currentTrack = "";
+  const sfxChannels = {};
+  const sfxLastAt = {};
+  const MUSIC_FILES = {
+    menu: "menu_theme.mp3",
+    heaven: "heaven_theme.mp3"
+  };
+
+  window.aolMusicVolume = Number(localStorage.getItem("aolMusicVolume") || 0.55);
+  window.aolSfxVolume = Number(localStorage.getItem("aolSfxVolume") || 0.90);
+  window.aolAudioUnlocked = false;
+
+  function visible(id){
+    const el = document.getElementById(id);
+    return !!(el && getComputedStyle(el).display !== "none");
+  }
+
+  function soundEnabled(){
+    return localStorage.getItem("aolSound") !== "0";
+  }
+
+  function setSoundEnabled(on){
+    localStorage.setItem("aolSound", on ? "1" : "0");
+    try{ window.soundOn = !!on; if(typeof soundOn !== "undefined") soundOn = !!on; }catch(e){}
+    const pause = document.getElementById("pauseSoundToggle");
+    if(pause) pause.textContent = on ? "🔊 Sound: On" : "🔇 Sound: Off";
+    const title = document.getElementById("soundToggle");
+    if(title) title.textContent = on ? "Sound: On" : "Sound: Off";
+    if(!on) stopMusic();
+  }
+
+  function cacheBust(src){
+    return src + (src.includes("?") ? "&" : "?") + "v=rc-audio-1";
+  }
+
+  function stopMusic(){
+    if(currentMusic){
+      try{ currentMusic.pause(); currentMusic.currentTime = 0; }catch(e){}
+    }
+    currentMusic = null;
+    currentTrack = "";
+    window.aolActiveMusic = null;
+    window.aolCurrentTrack = "";
+  }
+
+  function playMusic(src, trackName, loop=true){
+    if(!soundEnabled() || !window.aolAudioUnlocked) return;
+    if(currentTrack === trackName && currentMusic && !currentMusic.paused){
+      currentMusic.volume = window.aolMusicVolume;
+      return;
+    }
+    stopMusic();
+    try{
+      const a = new Audio(cacheBust(src));
+      a.loop = loop;
+      a.preload = "auto";
+      a.volume = window.aolSfxVolume;
+      currentMusic = a;
+      currentTrack = trackName;
+      window.aolActiveMusic = a;
+      window.aolCurrentTrack = trackName;
+      const p = a.play();
+      if(p && p.catch) p.catch(()=>{});
+    }catch(e){}
+  }
+
+  function regionTrack(){
+    let idx = 0;
+    try{ idx = Number(regionIndex) || 0; }catch(e){}
+    const regionNumber = Math.max(1, Math.min(10, idx + 1));
+    return ["region_" + regionNumber + ".mp3", "region_" + regionNumber];
+  }
+
+  window.stopUploadedMusic = stopMusic;
+  window.stopEveryMusicTrack = stopMusic;
+  window.stopAllMenuMusic = function(){
+    if(currentTrack === "menu") stopMusic();
+  };
+
+  window.playMenuMusic = function(){
+    if(visible("menu") || visible("tutorial")){
+      playMusic(MUSIC_FILES.menu, "menu", true);
+    }
+  };
+  window.startTitleMusic = window.playMenuMusic;
+
+  window.playRegionMusic = function(){
+    const [src, name] = regionTrack();
+    playMusic(src, name, true);
+  };
+
+  window.playHeavenMusic = function(){
+    playMusic(MUSIC_FILES.heaven, "heaven", true);
+  };
+
+  window.playUploadedSFX = function(name, src, cooldownMs=120){
+    if(!soundEnabled() || !window.aolAudioUnlocked) return;
+    try{
+      const now = performance.now();
+      if(sfxLastAt[name] && now - sfxLastAt[name] < cooldownMs) return;
+      sfxLastAt[name] = now;
+
+      if(sfxChannels[name]){
+        try{ sfxChannels[name].pause(); sfxChannels[name].currentTime = 0; }catch(e){}
+      }
+
+      const a = new Audio(cacheBust(src));
+      a.volume = window.aolSfxVolume;
+      sfxChannels[name] = a;
+      const p = a.play();
+      if(p && p.catch) p.catch(()=>{});
+    }catch(e){}
+  };
+
+  window.playBellTowerSFX = function(){ window.playUploadedSFX("bell","bell_tower.mp3",800); };
+  window.playRadianceSFX = function(){ window.playUploadedSFX("radiance","radiance.mp3",500); };
+  window.playSoulRescueSFX = function(){ window.playUploadedSFX("rescue","soul_rescue.mp3",180); };
+  window.playSoulCorruptionSFX = function(){ window.playUploadedSFX("corruption","soul_corruption.mp3",450); };
+  window.playWraithHitSFX = function(){ window.playUploadedSFX("wraithHit","wraith_hit.mp3",350); };
+  window.playSanctuarySFX = function(){ window.playUploadedSFX("sanctuary","sanctuary.mp3",1200); };
+  window.playArmorFoundSFX = function(){ window.playUploadedSFX("armorFound","armor_found.mp3",900); };
+  window.playLanternActivationSFX = function(){ window.playUploadedSFX("lantern","lantern_activation.mp3",650); };
+
+  window.applyAolVolumes = function(){
+    if(currentMusic) currentMusic.volume = window.aolMusicVolume;
+  };
+
+  function unlockAudio(){
+    window.aolAudioUnlocked = true;
+    try{ if(typeof initAudio === "function") initAudio(); }catch(e){}
+    const prompt = document.getElementById("tapToBeginPrompt");
+    if(prompt) prompt.style.display = "none";
+    if(visible("menu") || visible("tutorial")) window.playMenuMusic();
+    else if(visible("ui")) window.playRegionMusic();
+  }
+
+  function bindControls(){
+    setSoundEnabled(soundEnabled());
+
+    const musicSlider = document.getElementById("musicVolumeSlider");
+    if(musicSlider){
+      musicSlider.value = Math.round(window.aolMusicVolume * 100);
+      musicSlider.oninput = function(e){
+        window.aolMusicVolume = Number(e.target.value) / 100;
+        localStorage.setItem("aolMusicVolume", window.aolMusicVolume);
+        window.applyAolVolumes();
+      };
+    }
+
+    const sfxSlider = document.getElementById("sfxVolumeSlider");
+    if(sfxSlider){
+      sfxSlider.value = Math.round(window.aolSfxVolume * 100);
+      sfxSlider.oninput = function(e){
+        window.aolSfxVolume = Number(e.target.value) / 100;
+        localStorage.setItem("aolSfxVolume", window.aolSfxVolume);
+      };
+    }
+
+    const pauseSound = document.getElementById("pauseSoundToggle");
+    if(pauseSound){
+      pauseSound.onclick = function(e){
+        if(e) e.preventDefault();
+        const next = !soundEnabled();
+        setSoundEnabled(next);
+        if(next){
+          window.aolAudioUnlocked = true;
+          if(visible("ui")) window.playRegionMusic();
+          else if(visible("menu") || visible("tutorial")) window.playMenuMusic();
+        }
+      };
+    }
+
+    const titleSound = document.getElementById("soundToggle");
+    if(titleSound){
+      titleSound.onclick = function(e){
+        if(e) e.preventDefault();
+        const next = !soundEnabled();
+        setSoundEnabled(next);
+        if(next) unlockAudio();
+      };
+    }
+
+    document.addEventListener("pointerdown", unlockAudio, {once:true, passive:true});
+    document.addEventListener("touchstart", unlockAudio, {once:true, passive:true});
+    document.addEventListener("mousedown", unlockAudio, {once:true, passive:true});
+  }
+
+  window.addEventListener("load", bindControls);
+})();
+</script>
+
+
+
+<script>
+/* === Ability Button Movement Guard: visual/input-safe only === */
+(function(){
+  window.aolAbilityTapGuardUntil = 0;
+
+  function markAbilityTap(e){
+    window.aolAbilityTapGuardUntil = performance.now() + 180;
+    // Important: do NOT stop propagation here.
+    // The ability button's existing onclick must still fire normally.
+  }
+
+  window.addEventListener("load", function(){
+    ["miracle","pathAbility"].forEach(function(id){
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.addEventListener("pointerdown", markAbilityTap, {passive:true});
+      el.addEventListener("touchstart", markAbilityTap, {passive:true});
+      el.addEventListener("mousedown", markAbilityTap, {passive:true});
+    });
+  });
+})();
+</script>
+
+
+
+
+
+
+<script>
+/* === Pause Volume Controls Logic === */
+(function(){
+  window.aolMusicVolume = Number(localStorage.getItem("aolMusicVolume") || window.aolMusicVolume || 0.55);
+  window.aolSfxVolume = Number(localStorage.getItem("aolSfxVolume") || window.aolSfxVolume || 0.90);
+
+  window.applyAolVolumes = function(){
+    try{
+      if(window.aolActiveMusic && typeof window.aolActiveMusic.volume !== "undefined"){
+        window.aolActiveMusic.volume = window.aolMusicVolume;
+      }
+    }catch(e){}
+  };
+
+  window.addEventListener("load", function(){
+    const music = document.getElementById("musicVolumeSlider");
+    const sfx = document.getElementById("sfxVolumeSlider");
+
+    if(music){
+      music.value = Math.round(window.aolMusicVolume * 100);
+      music.oninput = function(e){
+        window.aolMusicVolume = Number(e.target.value) / 100;
+        localStorage.setItem("aolMusicVolume", window.aolMusicVolume);
+        window.applyAolVolumes();
+      };
+    }
+
+    if(sfx){
+      sfx.value = Math.round(window.aolSfxVolume * 100);
+      sfx.oninput = function(e){
+        window.aolSfxVolume = Number(e.target.value) / 100;
+        localStorage.setItem("aolSfxVolume", window.aolSfxVolume);
+      };
+    }
+  });
+})();
+</script>
+
+
+
+
+
+
+
+
+
+
+<script>
+/* === Safe Tap To Begin Logic === */
+(function(){
+  function hidePrompt(){
+    const p=document.getElementById("tapToBeginPrompt");
+    if(p)p.style.display="none";
+  }
+
+  function tryStartMenuMusic(){
+    hidePrompt();
+    try{
+      if(typeof initAudio==="function")initAudio();
+    }catch(e){}
+
+    // Support whichever menu music helper exists in this build.
+    try{
+      if(typeof playMenuMusic==="function")playMenuMusic();
+      else if(typeof refreshMusicForScreen==="function")refreshMusicForScreen();
+      else if(typeof startTitleMusic==="function")startTitleMusic();
+    }catch(e){}
+  }
+
+  window.addEventListener("load",function(){
+    const menu=document.getElementById("menu");
+    if(!menu)return;
+    menu.addEventListener("pointerdown",tryStartMenuMusic,{once:true,passive:true});
+    menu.addEventListener("touchstart",tryStartMenuMusic,{once:true,passive:true});
+    menu.addEventListener("mousedown",tryStartMenuMusic,{once:true,passive:true});
+  });
+})();
+</script>
+
+
+
+
+
+
+
+
+
+
+<script>
+/* === Heaven Level Select Option Handler === */
+window.addEventListener("load",function(){
+ const btn=document.getElementById("playPauseSelectedLevel");
+ if(!btn)return;
+ btn.onclick=function(e){
+   if(e)e.preventDefault();
+   const sel=document.getElementById("pauseLevelSelect");
+   if(sel&&sel.value==="heaven"){closePauseMenu();viewHeavenEndingTest();return;}
+   regionIndex=Number(sel.value)||0;
+   localStorage.setItem("aolRegion",regionIndex);
+   closePauseMenu();
+   newGame(false);
+ };
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+<script>
+/* === Release Candidate Button Stability Pass === */
+window.addEventListener("load",function(){
+  function byId(id){ return document.getElementById(id); }
+  function safePrevent(e){ if(e){ e.preventDefault(); e.stopPropagation(); } }
+
+  function closeArmorCelebration(){
+    try{
+      const celebr=byId("armorCelebration");
+      const popup=byId("armorPopup");
+      const backdrop=byId("armorBackdrop");
+      if(celebr) celebr.style.display="none";
+      if(popup){ popup.style.display="none"; popup.classList.remove("show"); }
+      if(backdrop) backdrop.style.display="none";
+    }catch(err){}
+    try{
+      if(typeof state!=="undefined" && state){
+        state.armorCelebrating=false;
+        state.paused=false;
+      }
+    }catch(err){}
+  }
+
+  const start=byId("startGame");
+  if(start){
+    start.disabled=false; start.style.pointerEvents="auto";
+    start.onclick=function(e){
+      safePrevent(e);
+      try{ if(typeof initAudio==="function")initAudio(); }catch(err){}
+      try{ if(window.stopUploadedMusic)window.stopUploadedMusic(); }catch(err){}
+      if(typeof screen==="function") screen("tutorial");
+    };
+  }
+
+  const cont=byId("continueGame");
+  if(cont){
+    cont.disabled=false; cont.style.pointerEvents="auto";
+    cont.onclick=function(e){
+      safePrevent(e);
+      try{ if(typeof initAudio==="function")initAudio(); }catch(err){}
+      try{ if(window.stopUploadedMusic)window.stopUploadedMusic(); }catch(err){}
+      if(typeof newGame==="function") newGame(false);
+    };
+  }
+
+  const begin=byId("beginAfterTutorial");
+  if(begin){
+    begin.disabled=false; begin.style.pointerEvents="auto";
+    begin.onclick=function(e){
+      safePrevent(e);
+      try{ if(typeof initAudio==="function")initAudio(); }catch(err){}
+      try{ if(window.stopUploadedMusic)window.stopUploadedMusic(); }catch(err){}
+      if(typeof newGame==="function") newGame(false);
+    };
+  }
+
+  const resume=byId("resumeGame");
+  if(resume){
+    resume.disabled=false; resume.style.pointerEvents="auto";
+    resume.onclick=function(e){ safePrevent(e); if(typeof closePauseMenu==="function") closePauseMenu(); };
+  }
+
+  const restartLevel=byId("restartLevel");
+  if(restartLevel){
+    restartLevel.disabled=false; restartLevel.style.pointerEvents="auto";
+    restartLevel.onclick=function(e){ safePrevent(e); if(typeof closePauseMenu==="function") closePauseMenu(); if(typeof newGame==="function") newGame(false); };
+  }
+
+  const returnTitle=byId("returnTitle");
+  if(returnTitle){
+    returnTitle.disabled=false; returnTitle.style.pointerEvents="auto";
+    returnTitle.onclick=function(e){
+      safePrevent(e);
+      try{ if(window.stopUploadedMusic)window.stopUploadedMusic(); }catch(err){}
+      if(typeof showMenu==="function") showMenu(); else if(typeof screen==="function") screen("menu");
+    };
+  }
+
+  const heaven=byId("heavenButton") || byId("returnToTitle");
+  if(heaven){
+    heaven.disabled=false; heaven.style.pointerEvents="auto";
+    heaven.onclick=function(e){
+      safePrevent(e);
+      try{ if(window.stopUploadedMusic)window.stopUploadedMusic(); }catch(err){}
+      if(typeof showMenu==="function") showMenu(); else if(typeof screen==="function") screen("menu");
+    };
+  }
+
+  ["armorContinueBtn","armorContinue"].forEach(function(id){
+    const btn=byId(id);
+    if(!btn)return;
+    btn.disabled=false;
+    btn.style.pointerEvents="auto";
+    btn.onclick=function(e){
+      safePrevent(e);
+      closeArmorCelebration();
+    };
+  });
+
+  function shopVisible(){
+    const el=byId("faithShop");
+    return !!(el && getComputedStyle(el).display!=="none");
+  }
+  function doBuy(cost,key){
+    if(!shopVisible()) return;
+    if(typeof buyShop==="function") buyShop(cost,key);
+  }
+
+  const buyRoad=byId("buyRoad");
+  if(buyRoad){ buyRoad.disabled=false; buyRoad.style.pointerEvents="auto"; buyRoad.onclick=function(e){safePrevent(e);doBuy(1000,"road");}; }
+  const buyBlessing=byId("buyBlessing");
+  if(buyBlessing){ buyBlessing.disabled=false; buyBlessing.style.pointerEvents="auto"; buyBlessing.onclick=function(e){safePrevent(e);doBuy(1250,"blessing");}; }
+  const buyCall=byId("buyCall");
+  if(buyCall){ buyCall.disabled=false; buyCall.style.pointerEvents="auto"; buyCall.onclick=function(e){safePrevent(e);doBuy(1500,"call");}; }
+
+  const finish=byId("finishShop");
+  if(finish){
+    finish.disabled=false; finish.style.pointerEvents="auto";
+    finish.onclick=function(e){ safePrevent(e); if(shopVisible() && typeof finishShop==="function") finishShop(); };
+  }
+
+  const next=byId("nextMission");
+  if(next){
+    next.disabled=false; next.style.pointerEvents="auto";
+    next.onclick=function(e){ safePrevent(e); if(typeof newGame==="function") newGame(true); };
+  }
+
+  function gameBeaten(){
+    return localStorage.getItem("aolGameCompleted")==="1" ||
+           localStorage.getItem("aolHeavenSeen")==="1";
+  }
+  window.safeApplyLevelSelectGate=function(){
+    const sel=byId("pauseLevelSelect");
+    const btn=byId("playPauseSelectedLevel");
+    if(!sel||!btn)return;
+    if(!gameBeaten()){
+      sel.disabled=true;
+      sel.innerHTML='<option>Unlocks after completing Region 10</option>';
+      btn.disabled=true;
+      btn.style.opacity="0.5";
+      btn.textContent="Level Select Locked";
+    }else{
+      sel.disabled=false;
+      btn.disabled=false;
+      btn.style.opacity="1";
+      btn.textContent="Play Selected Level";
+      if(sel.options.length===1 && sel.options[0].textContent.includes("Unlocks")){
+        sel.innerHTML="";
+        if(typeof populatePauseLevelSelect==="function") populatePauseLevelSelect();
+      }
+    }
+  };
+
+  const levelBtn=byId("playPauseSelectedLevel");
+  if(levelBtn){
+    levelBtn.style.pointerEvents="auto";
+    levelBtn.onclick=function(e){
+      safePrevent(e);
+      const sel=byId("pauseLevelSelect");
+      if(!gameBeaten()){ window.safeApplyLevelSelectGate(); return; }
+      if(sel && sel.value==="heaven"){
+        if(typeof closePauseMenu==="function") closePauseMenu();
+        if(typeof viewHeavenEndingTest==="function") viewHeavenEndingTest();
+        return;
+      }
+      if(sel){
+        regionIndex=Number(sel.value)||0;
+        localStorage.setItem("aolRegion",regionIndex);
+      }
+      if(typeof closePauseMenu==="function") closePauseMenu();
+      if(typeof newGame==="function") newGame(false);
+    };
+  }
+
+  const pauseBtn=byId("pauseBtn");
+  if(pauseBtn){
+    pauseBtn.disabled=false; pauseBtn.style.pointerEvents="auto";
+    pauseBtn.addEventListener("click",function(){ setTimeout(function(){ if(window.safeApplyLevelSelectGate) window.safeApplyLevelSelectGate(); },60); },true);
+  }
+
+  ["musicVolumeSlider","sfxVolumeSlider"].forEach(function(id){
+    const slider=byId(id);
+    if(slider){ slider.disabled=false; slider.style.pointerEvents="auto"; }
+  });
+});
+</script>
+
+
+<script>
+/* === Release Candidate SFX Rescue Layer === */
+(function(){
+  window.aolSfxVolume = Number(localStorage.getItem("aolSfxVolume") || window.aolSfxVolume || 0.90);
+  window.__shepherdSfxChannels = window.__shepherdSfxChannels || {};
+  window.__shepherdSfxLastAt = window.__shepherdSfxLastAt || {};
+
+  function soundAllowed(){
+    try{
+      if(typeof soundOn !== "undefined" && !soundOn) return false;
+      if(localStorage.getItem("aolSound")==="0") return false;
+    }catch(e){}
+    return true;
+  }
+
+  function bust(src){
+    return src + (src.includes("?") ? "&" : "?") + "v=sfx-rescue-1";
+  }
+
+  window.playUploadedSFX = function(name, src, cooldownMs){
+    try{
+      if(!soundAllowed()) return;
+      const now = performance.now();
+      cooldownMs = cooldownMs ?? 120;
+      if(window.__shepherdSfxLastAt[name] && now - window.__shepherdSfxLastAt[name] < cooldownMs) return;
+      window.__shepherdSfxLastAt[name] = now;
+
+      // Stop only same SFX so repeated triggers do not stack into delayed chaos.
+      const old = window.__shepherdSfxChannels[name];
+      if(old){
+        try{ old.pause(); old.currentTime = 0; }catch(e){}
+      }
+
+      const a = new Audio(bust(src));
+      a.volume = Number(localStorage.getItem("aolSfxVolume") || window.aolSfxVolume || 0.90);
+      window.__shepherdSfxChannels[name] = a;
+      const p = a.play();
+      if(p && p.catch) p.catch(()=>{});
+    }catch(e){}
+  };
+
+  window.playBellTowerSFX = function(){ window.playUploadedSFX("bell","bell_tower.mp3",800); };
+  window.playRadianceSFX = function(){ window.playUploadedSFX("radiance","radiance.mp3",500); };
+  window.playSoulRescueSFX = function(){ window.playUploadedSFX("rescue","soul_rescue.mp3",180); };
+  window.playSoulCorruptionSFX = function(){ window.playUploadedSFX("corruption","soul_corruption.mp3",450); };
+  window.playWraithHitSFX = function(){ window.playUploadedSFX("wraithHit","wraith_hit.mp3",350); };
+  window.playSanctuarySFX = function(){ window.playUploadedSFX("sanctuary","sanctuary.mp3",1200); };
+
+  window.addEventListener("load",function(){
+    const sfx=document.getElementById("sfxVolumeSlider");
+    if(sfx){
+      sfx.value=Math.round(Number(localStorage.getItem("aolSfxVolume") || window.aolSfxVolume || 0.90)*100);
+      sfx.oninput=function(e){
+        window.aolSfxVolume=Number(e.target.value)/100;
+        localStorage.setItem("aolSfxVolume",window.aolSfxVolume);
+      };
+    }
+  });
+})();
+</script>
+
+
+
+
+
+
+<script>
+/* === Final Music Slider Bridge === */
+(function(){
+  function clamp01(v){ return Math.max(0, Math.min(1, Number(v)||0)); }
+
+  window.setFinalMusicVolume=function(v){
+    window.aolMusicVolume=clamp01(v);
+    localStorage.setItem("aolMusicVolume",String(window.aolMusicVolume));
+    try{ if(window.aolActiveMusic) window.aolActiveMusic.volume=window.aolMusicVolume; }catch(e){}
+    try{ if(typeof window.applyAolVolumes==="function") window.applyAolVolumes(); }catch(e){}
+  };
+
+  window.setFinalSfxVolume=function(v){
+    window.aolSfxVolume=clamp01(v);
+    localStorage.setItem("aolSfxVolume",String(window.aolSfxVolume));
+  };
+
+  function bindFinalSliders(){
+    const music=document.getElementById("musicVolumeSlider");
+    const sfx=document.getElementById("sfxVolumeSlider");
+    const mv=clamp01(localStorage.getItem("aolMusicVolume") ?? window.aolMusicVolume ?? 0.55);
+    const sv=clamp01(localStorage.getItem("aolSfxVolume") ?? window.aolSfxVolume ?? 0.90);
+
+    window.setFinalMusicVolume(mv);
+    window.setFinalSfxVolume(sv);
+
+    if(music){
+      music.disabled=false;
+      music.style.pointerEvents="auto";
+      music.value=Math.round(mv*100);
+      music.oninput=function(e){ window.setFinalMusicVolume(Number(e.target.value)/100); };
+      music.onchange=music.oninput;
+    }
+
+    if(sfx){
+      sfx.disabled=false;
+      sfx.style.pointerEvents="auto";
+      sfx.value=Math.round(sv*100);
+      sfx.oninput=function(e){ window.setFinalSfxVolume(Number(e.target.value)/100); };
+      sfx.onchange=sfx.oninput;
+    }
+  }
+
+  window.addEventListener("load",bindFinalSliders);
+  document.addEventListener("click",function(e){
+    if(e.target&&e.target.id==="pauseBtn")setTimeout(bindFinalSliders,80);
+  },true);
+})();
+</script>
+
+</body>
+</html>
